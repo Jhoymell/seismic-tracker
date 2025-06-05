@@ -83,41 +83,35 @@ profile_default/
 ipython_config.py
 
 # pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
+#   For a library or package, you might want to ignore these files since the code es
+#   intended to run en múltiples entornos; de lo contrario, cópialos en el control de versión.
 # .python-version
 
 # pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
+#   Según pypa/pipenv#598, se recomienda incluir Pipfile.lock en el control de versión.
+#   Sin embargo, en caso de colaboración, si hay dependencias específicas de plataforma o
+#   dependencias sin soporte multiplataforma, pipenv podría instalar dependencias que no funcionen.
 #Pipfile.lock
 
 # UV
-#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
+#   Similar a Pipfile.lock, generalmente se recomienda incluir uv.lock en el control de versión.
 #uv.lock
 
 # poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
+#   Similar a Pipfile.lock, generalmente se recomienda incluir poetry.lock en el control de versión.
 #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
 #poetry.lock
 
 # pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#   Similar a Pipfile.lock, generalmente se recomienda incluir pdm.lock en el control de versión.
 #pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
+#   pdm guarda configuraciones del proyecto en .pdm.toml, pero se recomienda no incluirlo en el control de versión.
 #   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
 .pdm.toml
 .pdm-python
 .pdm-build/
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+# PEP 582; usado por ej. github.com/David-OConnor/pyflow y github.com/pdm-project/pdm
 __pypackages__/
 
 # Celery stuff
@@ -127,7 +121,7 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Environments de Python
 .env
 .venv
 env/
@@ -161,23 +155,18 @@ dmypy.json
 cython_debug/
 
 # PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+#  La plantilla específica de JetBrains se mantiene en https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+#  y puede agregarse al gitignore global o fusionarse en este archivo. 
+#  Para ignorar toda la carpeta .idea, descomenta la siguiente línea:
 #.idea/
 
 # Abstra
-# Abstra is an AI-powered process automation framework.
-# Ignore directories containing user credentials, local state, and settings.
-# Learn more at https://abstra.io/docs
+# Abstra es un framework de automatización de procesos. Ignora directorios con credenciales de usuario.
 .abstra/
 
 # Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
-#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
-#  you could uncomment the following to ignore the enitre vscode folder
+#  La plantilla específica de VS Code está en https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
+#  Puedes descomentar para ignorar toda la carpeta .vscode, si prefieres:
 # .vscode/
 
 # Ruff stuff:
@@ -187,8 +176,37 @@ cython_debug/
 .pypirc
 
 # Cursor
-#  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
-#  refer to https://docs.cursor.com/context/ignore-files
+#  Cursor es un editor de código con IA. `.cursorignore` excluye archivos/directorios de la IA.
 .cursorignore
 .cursorindexingignore
+
+##############################################
+# Agregar a partir de aquí                 #
+##############################################
+
+# Node.js / React
+node_modules/
+build/
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# Entornos de desarrollo de frontend
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# VS Code (opcional, pero recomendado)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Archivos de sistema operativo comunes
+.DS_Store
+Thumbs.db
+##############################################
+# Fin de secciones agregadas                 #
+##############################################
