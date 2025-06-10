@@ -13,7 +13,6 @@ def update_last_login(sender, request, user, **kwargs):
     # El TokenObtainPairView de SimpleJWT también dispara esta señal, por lo que
     # Django debería manejar la actualización de 'last_login' por defecto.
    
-
     user.last_login = timezone.now()
     user.save(update_fields=['last_login'])
     print(f"Señal de login recibida: Se actualizó last_login para el usuario {user.email}")
