@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
+    'rest_framework.simplejwt',  # Para autenticación con tokens
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,12 @@ AUTH_USER_MODEL = 'api.Usuario'
 # Configuración para archivos multimedia (subida de fotos de usuario)
 MEDIA_URL = '/media/' # URL base para servir archivos multimedia
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # Directorio en el sistema de archivos donde se guardarán los archivos [cite: 14]
+# Configuración de Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
