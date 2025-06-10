@@ -18,10 +18,19 @@ from django.contrib import admin
 from django.urls import path, include # Asegúrate de importar 'include'
 from django.conf import settings # Importar settings
 from django.conf.urls.static import static # Importar static
+# Importar las vistas de autenticación de JWT
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')), # Incluye las URLs de tu app 'api' bajo el prefijo 'api/'
+    # Rutas para la autenticación JWT
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 # Servir archivos multimedia durante el desarrollo
