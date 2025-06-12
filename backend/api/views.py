@@ -2,6 +2,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from .serializers import RegistroUsuarioSerializer
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import MyTokenObtainPairSerializer # Importa nuestro nuevo serializer
 
 Usuario = get_user_model()
 
@@ -24,3 +26,6 @@ class RegistroUsuarioView(generics.CreateAPIView):
         # Si la validación falla, DRF por defecto devuelve los errores en formato JSON.
         # El validador del lado del servidor se ejecuta aquí[cite: 9].
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
