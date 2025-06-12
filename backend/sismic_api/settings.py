@@ -37,9 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
+    'api.apps.ApiConfig',  # Aplicación personalizada para la API
     'rest_framework',
-    'rest_framework.simplejwt',  # Para autenticación con tokens
+    'rest_framework_simplejwt',  # Para autenticación con tokens
 ]
 
 MIDDLEWARE = [

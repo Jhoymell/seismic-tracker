@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model # Para obtener el modelo Usuario activo
 from django.contrib.auth.hashers import make_password # Para hashear la contraseña
 from django.core.validators import RegexValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth.signals import user_logged_in
 
 Usuario = get_user_model()
 
@@ -65,3 +67,15 @@ class RegistroUsuarioSerializer(serializers.ModelSerializer):
         validated_data['tipo_usuario'] = Usuario.TipoUsuario.VISITANTE
 
         return super().create(validated_data)
+    
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        # La validación por defecto de TokenObtainPairSerializer se encarga de
+        # verificar las credenciales del usuario.
+        data = super().validate(attrs)
+
+        # Si las credenciales son válidas, 'self.user' contendrá el objeto del usuario.
+        # Aquí es donde disparamos la señal 'user_logged_in' manualmente.
+        user_logged_in.send(sender=self.user.__class__, request=self.context.get('request'), user=self.user)
+
+        return data
