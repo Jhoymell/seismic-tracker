@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import make_password # Para hashear la contrase
 from django.core.validators import RegexValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.signals import user_logged_in
+from .models import Noticia 
 
 Usuario = get_user_model()
 
@@ -121,3 +122,9 @@ class PerfilUsuarioSerializer(serializers.ModelSerializer):
 
         # Llama al método update del padre para actualizar el resto de los campos
         return super().update(instance, validated_data)
+
+class NoticiaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Noticia
+        fields = ['id', 'titulo', 'contenido', 'fecha_publicacion']
+        read_only_fields = ['fecha_publicacion'] # La fecha se establece automáticamente

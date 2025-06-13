@@ -7,6 +7,12 @@ from .serializers import MyTokenObtainPairSerializer # Importa nuestro nuevo ser
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated # Permiso para requerir autenticación
 from .serializers import PerfilUsuarioSerializer # Importar el nuevo serializer
+from rest_framework import viewsets
+from .models import Noticia
+from .serializers import NoticiaSerializer
+from .permissions import IsAdminUser # Importar nuestro permiso personalizado
+from rest_framework.permissions import IsAuthenticated
+
 
 Usuario = get_user_model()
 
@@ -48,3 +54,29 @@ class PerfilUsuarioView(generics.RetrieveUpdateAPIView):
         que está haciendo la petición (request.user).
         """
         return self.request.user
+    
+class NoticiaViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet para el CRUD de Noticias.
+    - `list` (GET): Abierto a cualquier usuario autenticado.
+    - `retrieve` (GET /<id>): Abierto a cualquier usuario autenticado.
+    - `create` (POST): Solo para administradores.
+    - `update` (PUT /<id>): Solo para administradores.
+    - `partial_update` (PATCH /<id>): Solo para administradores.
+    - `destroy` (DELETE /<id>): Solo para administradores.
+    """
+    queryset = Noticia.objects.all().order_by('-fecha_publicacion') # Aseguramos el orden requerido
+    serializer_class = NoticiaSerializer
+
+    def get_permissions(self):
+        """
+        Asigna permisos basados en la acción que se está realizando.
+        """
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            # Si la acción es crear, actualizar o eliminar, se requieren permisos de administrador. 
+            permission_classes = [IsAdminUser]
+        else:
+            # Para otras acciones como 'list' o 'retrieve', solo se requiere estar autenticado. 
+            permission_classes = [IsAuthenticated]
+
+        return [permission() for permission in permission_classes]
