@@ -4,6 +4,9 @@ from .serializers import RegistroUsuarioSerializer
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer # Importa nuestro nuevo serializer
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated # Permiso para requerir autenticación
+from .serializers import PerfilUsuarioSerializer # Importar el nuevo serializer
 
 Usuario = get_user_model()
 
@@ -29,3 +32,19 @@ class RegistroUsuarioView(generics.CreateAPIView):
     
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+class PerfilUsuarioView(generics.RetrieveUpdateAPIView):
+    """
+    Vista para que los usuarios vean y actualicen su perfil.
+    - GET: Devuelve los datos del usuario autenticado.
+    - PUT/PATCH: Actualiza los datos del usuario autenticado.
+    """
+    serializer_class = PerfilUsuarioSerializer
+    permission_classes = [IsAuthenticated] # ¡Muy importante! Solo usuarios autenticados.
+
+    def get_object(self):
+        """
+        Sobrescribimos este método para que siempre devuelva el usuario
+        que está haciendo la petición (request.user).
+        """
+        return self.request.user

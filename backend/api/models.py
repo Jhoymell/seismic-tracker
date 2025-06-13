@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from .utils import get_unique_filename
 
 class Usuario(AbstractUser):
     telefono = models.CharField(max_length=20, blank=True, null=True)
     fecha_nacimiento = models.DateField(null=True, blank=True)
-    ruta_fotografia = models.CharField(max_length=255, blank=True, null=True)
-
+    ruta_fotografia = models.ImageField(upload_to=get_unique_filename, blank=True, null=True, max_length=255)
     class TipoUsuario(models.TextChoices):
         VISITANTE = 'VISITANTE', 'Visitante'
         ADMINISTRADOR = 'ADMINISTRADOR', 'Administrador'

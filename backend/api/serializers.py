@@ -79,3 +79,45 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         user_logged_in.send(sender=self.user.__class__, request=self.context.get('request'), user=self.user)
 
         return data
+    
+
+class PerfilUsuarioSerializer(serializers.ModelSerializer):
+    # Hacemos los campos de contraseña opcionales y solo de escritura
+    password = serializers.CharField(write_only=True, required=False, style={'input_type': 'password'})
+    password_confirm = serializers.CharField(write_only=True, required=False, style={'input_type': 'password'})
+
+    class Meta:
+        model = Usuario
+        # Campos que el usuario puede ver y modificar
+        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'telefono', 'fecha_nacimiento', 'ruta_fotografia', 'password', 'password_confirm']
+
+        # El email y username no deben ser modificables en este endpoint
+        read_only_fields = ['id', 'email', 'username']
+
+    def validate(self, data):
+        """
+        Valida si las contraseñas nuevas coinciden.
+        """
+        password = data.get('password', None)
+        password_confirm = data.get('password_confirm', None)
+
+        if password and password_confirm and password != password_confirm:
+            raise serializers.ValidationError({"password_confirm": "Las nuevas contraseñas no coinciden."})
+
+        # No es necesario guardar password_confirm
+        if 'password_confirm' in data:
+            data.pop('password_confirm')
+
+        return data
+
+    def update(self, instance, validated_data):
+        """
+        Actualiza la instancia del usuario.
+        """
+        # Si se proporciona una nueva contraseña, la hasheamos y la actualizamos.
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password) # set_password se encarga del hashing
+
+        # Llama al método update del padre para actualizar el resto de los campos
+        return super().update(instance, validated_data)
