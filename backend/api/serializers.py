@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.signals import user_logged_in
 from .models import Noticia 
+from .models import EventoSismico
 
 Usuario = get_user_model()
 
@@ -128,3 +129,8 @@ class NoticiaSerializer(serializers.ModelSerializer):
         model = Noticia
         fields = ['id', 'titulo', 'contenido', 'fecha_publicacion']
         read_only_fields = ['fecha_publicacion'] # La fecha se establece automáticamente
+
+class EventoSismicoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventoSismico
+        fields = '__all__' # Incluimos todos los campos del modelo

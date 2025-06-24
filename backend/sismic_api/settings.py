@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',  # Aplicación personalizada para la API
     'rest_framework',
     'rest_framework_simplejwt',  # Para autenticación con tokens
+    'django_filters',  # Para filtrado en las vistas de la API
 ]
 
 MIDDLEWARE = [
