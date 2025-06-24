@@ -12,6 +12,10 @@ from .models import Noticia
 from .serializers import NoticiaSerializer
 from .permissions import IsAdminUser # Importar nuestro permiso personalizado
 from rest_framework.permissions import IsAuthenticated
+from .models import EventoSismico
+from .serializers import EventoSismicoSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 
 Usuario = get_user_model()
@@ -80,3 +84,27 @@ class NoticiaViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
 
         return [permission() for permission in permission_classes]
+
+class EventoSismicoViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet de solo lectura para los eventos sísmicos.
+    Permite filtrar por magnitud, fecha y buscar por ubicación.
+    """
+    queryset = EventoSismico.objects.all().order_by('-fecha_hora_evento')
+    serializer_class = EventoSismicoSerializer
+    permission_classes = [IsAuthenticated] # Solo usuarios logueados pueden ver los sismos
+
+    # Configuración de los backends de filtrado
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+
+    # Campos por los que se puede filtrar directamente (ej: /api/sismos/?magnitud=5.5)
+    filterset_fields = {
+        'magnitud': ['exact', 'gte', 'lte'], # exacta, mayor o igual, menor o igual
+        'fecha_hora_evento': ['date', 'gte', 'lte'], # por fecha exacta, mayor o igual, menor o igual
+    }
+
+    # Campos en los que se puede buscar texto (ej: /api/sismos/?search=California)
+    search_fields = ['lugar_descripcion']
+
+    # Campos por los que se puede ordenar (ej: /api/sismos/?ordering=magnitud o -magnitud)
+    ordering_fields = ['fecha_hora_evento', 'magnitud', 'profundidad']
