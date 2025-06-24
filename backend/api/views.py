@@ -16,6 +16,7 @@ from .models import EventoSismico
 from .serializers import EventoSismicoSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from .filters import EventoSismicoFilter
 
 
 Usuario = get_user_model()
@@ -96,6 +97,8 @@ class EventoSismicoViewSet(viewsets.ReadOnlyModelViewSet):
 
     # Configuración de los backends de filtrado
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+     # Usamos nuestra clase de filtros personalizada en lugar de 'filterset_fields'
+    filterset_class = EventoSismicoFilter 
 
     # Campos por los que se puede filtrar directamente (ej: /api/sismos/?magnitud=5.5)
     filterset_fields = {
