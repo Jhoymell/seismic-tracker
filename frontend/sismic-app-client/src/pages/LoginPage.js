@@ -18,8 +18,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore(); // Obtener la acción de login del store
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, formState: { errors, isSubmitting, isValid, dirtyFields } } = useForm({
     resolver: yupResolver(schema),
+    mode: 'onChange',
   });
 
   const onSubmit = async (data) => {
@@ -46,7 +47,7 @@ const LoginPage = () => {
           <input type="password" {...register('password')} placeholder="Contraseña" />
           {errors.password && <p className="error-message">{errors.password.message}</p>}
         </div>
-        <button type="submit" disabled={isSubmitting}>
+        <button type="submit" disabled={!isValid || !dirtyFields.email || !dirtyFields.password || isSubmitting}>
           {isSubmitting ? 'Ingresando...' : 'Ingresar'}
         </button>
         <p className="register-link">

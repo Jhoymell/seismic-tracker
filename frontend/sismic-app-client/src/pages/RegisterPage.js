@@ -12,23 +12,34 @@ import './RegisterPage.css';
 
 // 1. Definir el Esquema de Validación con Yup
 const schema = yup.object().shape({
-  first_name: yup.string().required('El nombre es obligatorio'), // 
-  last_name: yup.string().required('Los apellidos son obligatorios'), // 
-  email: yup.string().email('Debe ser un correo válido').required('El correo es obligatorio'), // 
+  first_name: yup.string().required('El nombre es obligatorio'),
+  last_name: yup.string().required('Los apellidos son obligatorios'),
+  email: yup.string()
+    .email('Debe ser un correo válido')
+    .required('El correo es obligatorio')
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      'El correo no tiene un formato válido'
+    ),
   username: yup.string().required('Un nombre de usuario es obligatorio (puede ser tu correo)'),
-  telefono: yup.string().matches(/^[0-9]+$/, "Debe contener solo números").min(8, 'Debe tener al menos 8 dígitos').required('El teléfono es obligatorio'), // 
+  telefono: yup.string()
+    .matches(/^\d{8,15}$/,
+      'Debe contener solo números y tener entre 8 y 15 dígitos')
+    .required('El teléfono es obligatorio'),
   password: yup.string()
     .required('La contraseña es obligatoria')
-    .min(8, 'Debe tener al menos 8 caracteres') // Requisito de longitud
-    .matches(/[A-Z]/, 'Debe contener al menos una mayúscula') // Requisito de mayúscula
-    .matches(/[a-z]/, 'Debe contener al menos una minúscula') // Requisito de minúscula
-    .matches(/[0-9]/, 'Debe contener al menos un número') // Requisito de número
-    .matches(/[^A-Za-z0-9]/, 'Debe contener al menos un carácter especial'), // Requisito de caracter especial
+    .min(8, 'Debe tener al menos 8 caracteres')
+    .matches(/[A-Z]/, 'Debe contener al menos una mayúscula')
+    .matches(/[a-z]/, 'Debe contener al menos una minúscula')
+    .matches(/[0-9]/, 'Debe contener al menos un número')
+    .matches(/[^A-Za-z0-9]/, 'Debe contener al menos un carácter especial'),
   password_confirm: yup.string()
     .oneOf([yup.ref('password'), null], 'Las contraseñas deben coincidir')
     .required('Debes confirmar la contraseña'),
-  // ...
-  fecha_nacimiento: yup.date().required('La fecha de nacimiento es obligatoria').typeError('Por favor, introduce una fecha válida'), // 
+  fecha_nacimiento: yup.date()
+    .required('La fecha de nacimiento es obligatoria')
+    .typeError('Por favor, introduce una fecha válida')
+    .max(new Date(Date.now() - 24 * 60 * 60 * 1000), 'La fecha debe ser anterior a hoy'),
 });
 
 const RegisterPage = () => {
@@ -74,42 +85,32 @@ const RegisterPage = () => {
 
   // 3. Manejador del envío del formulario
   const onSubmit = async (data) => {
-    // --- INICIO DE LA SOLUCIÓN ---
-    // Creamos una copia de los datos para poder modificarlos de forma segura
     const submissionData = { ...data };
-
-    // Verificamos si la fecha es un objeto Date válido
+    // Formatear fecha si es Date
     if (submissionData.fecha_nacimiento instanceof Date) {
-      // Formateamos el objeto Date al string 'YYYY-MM-DD' que el backend espera.
-      
-      // Obtenemos el año
       const year = submissionData.fecha_nacimiento.getFullYear();
-      
-      // Obtenemos el mes. getMonth() va de 0 a 11, así que sumamos 1.
-      // Usamos padStart para asegurar que tenga dos dígitos (ej: 06 en lugar de 6).
       const month = String(submissionData.fecha_nacimiento.getMonth() + 1).padStart(2, '0');
-      
-      // Obtenemos el día. Usamos padStart para asegurar dos dígitos (ej: 09 en lugar de 9).
       const day = String(submissionData.fecha_nacimiento.getDate()).padStart(2, '0');
-      
-      // Unimos todo en el formato correcto
       submissionData.fecha_nacimiento = `${year}-${month}-${day}`;
     }
-    // --- FIN DE LA SOLUCIÓN ---
-
     try {
-      // Ahora enviamos los datos ya formateados a la API
-      const response = await registerUser(submissionData); // Usamos la nueva variable
+      const response = await registerUser(submissionData);
       toast.success(response.message);
-      setTimeout(() => navigate('/login'), 2000); 
+      setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
+      // Mejor manejo de errores de la API
       if (error.response && error.response.data) {
         const apiErrors = error.response.data;
-        Object.keys(apiErrors).forEach((key) => {
-            // Corregimos un posible error aquí también: apiErrors[key] puede no ser un array.
+        if (typeof apiErrors === 'string') {
+          toast.error(apiErrors);
+        } else {
+          Object.keys(apiErrors).forEach((key) => {
             const message = Array.isArray(apiErrors[key]) ? apiErrors[key].join(', ') : apiErrors[key];
             toast.error(`${key}: ${message}`);
-        });
+          });
+        }
+      } else if (error.message) {
+        toast.error(error.message);
       } else {
         toast.error('Ocurrió un error inesperado. Inténtalo de nuevo.');
       }
