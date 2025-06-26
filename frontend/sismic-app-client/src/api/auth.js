@@ -11,3 +11,12 @@ export const registerUser = async (userData) => {
   const response = await axios.post(`${API_URL}/registro/`, userData);
   return response.data;
 };
+
+export const loginUser = async (credentials) => {
+  // Usamos 'email' en lugar de 'username' como pide nuestro backend
+  const response = await axios.post(`${API_URL}/token/`, {
+      email: credentials.email,
+      password: credentials.password,
+  });
+  return response.data;
+};
