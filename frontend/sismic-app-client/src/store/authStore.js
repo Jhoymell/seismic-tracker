@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { jwtDecode } from 'jwt-decode';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { jwtDecode } from "jwt-decode";
 
 // El store se crea con persistencia en localStorage.
 // El nombre 'auth-storage' es la clave que se usará en localStorage.
@@ -18,7 +18,12 @@ const useAuthStore = create(
         set({
           accessToken: tokens.access,
           refreshToken: tokens.refresh,
-          user: { id: decodedToken.user_id, email: decodedToken.email }, // Ajusta según el payload de tu token
+          // Ahora guardamos el objeto de usuario completo que nos interesa
+          user: {
+            id: decodedToken.user_id,
+            email: decodedToken.email,
+            tipo_usuario: decodedToken.tipo_usuario, // <-- NUEVA LÍNEA
+          },
           isAuthenticated: true,
         });
       },
@@ -36,7 +41,7 @@ const useAuthStore = create(
       // Podríamos añadir una acción para refrescar el token aquí en el futuro
     }),
     {
-      name: 'auth-storage', // Nombre del item en localStorage
+      name: "auth-storage", // Nombre del item en localStorage
     }
   )
 );

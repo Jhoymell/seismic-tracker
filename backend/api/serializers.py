@@ -71,15 +71,22 @@ class RegistroUsuarioSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        # Obtenemos el token por defecto
+        token = super().get_token(user)
+
+        # Añadimos claims (datos) personalizados al payload del token
+        token['email'] = user.email
+        token['tipo_usuario'] = user.tipo_usuario
+        # Puedes añadir más datos si los necesitas en el frontend
+        # token['first_name'] = user.first_name
+
+        return token
+
     def validate(self, attrs):
-        # La validación por defecto de TokenObtainPairSerializer se encarga de
-        # verificar las credenciales del usuario.
         data = super().validate(attrs)
-
-        # Si las credenciales son válidas, 'self.user' contendrá el objeto del usuario.
-        # Aquí es donde disparamos la señal 'user_logged_in' manualmente.
         user_logged_in.send(sender=self.user.__class__, request=self.context.get('request'), user=self.user)
-
         return data
     
 

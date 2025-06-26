@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 
 const LeftNav = () => {
+  // Ahora 'user' se está utilizando, por lo que la advertencia desaparecerá
   const { isAuthenticated, logout, user } = useAuthStore();
   const navigate = useNavigate();
 
@@ -19,7 +20,12 @@ const LeftNav = () => {
           <>
             <li><Link to="/mapa">Mapa de Sismos</Link></li>
             <li><Link to="/perfil">Mi Perfil</Link></li>
-            {/* Podríamos añadir lógica para el link de admin si user.tipo === 'ADMINISTRADOR' */}
+
+            {/* Lógica para mostrar el enlace de admin */}
+            {user && user.tipo_usuario === 'ADMINISTRADOR' && (
+              <li><Link to="/admin">Panel Admin</Link></li>
+            )}
+
             <li><button onClick={handleLogout}>Cerrar Sesión</button></li>
           </>
         ) : (
