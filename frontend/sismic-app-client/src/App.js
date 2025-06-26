@@ -10,18 +10,25 @@ import MapPage from './pages/MapPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function App() {
   return (
     <Router>
       <MainLayout>
         <Routes>
+          {/* Rutas Públicas */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
-          <Route path="/mapa" element={<MapPage />} />
-          <Route path="/perfil" element={<ProfilePage />} />
-          <Route path="/admin" element={<AdminPage />} />
+
+          {/* Rutas Protegidas */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/mapa" element={<MapPage />} />
+            <Route path="/perfil" element={<ProfilePage />} />
+            <Route path="/admin" element={<AdminPage />} />
+          </Route>
+
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </MainLayout>
