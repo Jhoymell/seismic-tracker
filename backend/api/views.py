@@ -17,6 +17,7 @@ from .serializers import EventoSismicoSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from .filters import EventoSismicoFilter
+from rest_framework.permissions import AllowAny
 
 
 Usuario = get_user_model()
@@ -24,6 +25,8 @@ Usuario = get_user_model()
 class RegistroUsuarioView(generics.CreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = RegistroUsuarioSerializer
+    authentication_classes = [] # No se requiere ninguna autenticación
+    permission_classes = [AllowAny] # Cualquier usuario (autenticado o no) tiene permiso
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -43,6 +46,8 @@ class RegistroUsuarioView(generics.CreateAPIView):
     
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+    authentication_classes = []
+    permission_classes = [AllowAny]
 
 class PerfilUsuarioView(generics.RetrieveUpdateAPIView):
     """

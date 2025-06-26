@@ -74,23 +74,47 @@ const RegisterPage = () => {
 
   // 3. Manejador del envío del formulario
   const onSubmit = async (data) => {
+    // --- INICIO DE LA SOLUCIÓN ---
+    // Creamos una copia de los datos para poder modificarlos de forma segura
+    const submissionData = { ...data };
+
+    // Verificamos si la fecha es un objeto Date válido
+    if (submissionData.fecha_nacimiento instanceof Date) {
+      // Formateamos el objeto Date al string 'YYYY-MM-DD' que el backend espera.
+      
+      // Obtenemos el año
+      const year = submissionData.fecha_nacimiento.getFullYear();
+      
+      // Obtenemos el mes. getMonth() va de 0 a 11, así que sumamos 1.
+      // Usamos padStart para asegurar que tenga dos dígitos (ej: 06 en lugar de 6).
+      const month = String(submissionData.fecha_nacimiento.getMonth() + 1).padStart(2, '0');
+      
+      // Obtenemos el día. Usamos padStart para asegurar dos dígitos (ej: 09 en lugar de 9).
+      const day = String(submissionData.fecha_nacimiento.getDate()).padStart(2, '0');
+      
+      // Unimos todo en el formato correcto
+      submissionData.fecha_nacimiento = `${year}-${month}-${day}`;
+    }
+    // --- FIN DE LA SOLUCIÓN ---
+
     try {
-      const response = await registerUser(data);
-      toast.success(response.message); // Notificación de éxito
-      // Redirigir al usuario a la página de login después de un registro exitoso 
+      // Ahora enviamos los datos ya formateados a la API
+      const response = await registerUser(submissionData); // Usamos la nueva variable
+      toast.success(response.message);
       setTimeout(() => navigate('/login'), 2000); 
     } catch (error) {
-      // Manejar errores de la API (ej: email ya existe)
       if (error.response && error.response.data) {
         const apiErrors = error.response.data;
         Object.keys(apiErrors).forEach((key) => {
-            toast.error(`${key}: ${apiErrors[key].join(', ')}`);
+            // Corregimos un posible error aquí también: apiErrors[key] puede no ser un array.
+            const message = Array.isArray(apiErrors[key]) ? apiErrors[key].join(', ') : apiErrors[key];
+            toast.error(`${key}: ${message}`);
         });
       } else {
         toast.error('Ocurrió un error inesperado. Inténtalo de nuevo.');
       }
     }
-  };
+};
 
   const strengthLabels = ["Muy Débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"];
 
