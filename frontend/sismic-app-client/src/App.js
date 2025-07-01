@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import AdminRoute from './components/auth/AdminRoute';
 
 function App() {
   return (
@@ -26,6 +27,10 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/mapa" element={<MapPage />} />
             <Route path="/perfil" element={<ProfilePage />} />
+          </Route>
+
+          {/* Ruta solo para admin */}
+          <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminPage />} />
           </Route>
 

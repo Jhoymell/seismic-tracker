@@ -26,3 +26,12 @@ export const updateProfile = async (profileData) => {
   });
   return response.data;
 };
+
+export const getVisitorUsers = async () => {
+    const response = await apiClient.get('/admin/users/');
+    return response.data;
+};
+
+export const deleteUser = async (userId) => {
+    await apiClient.delete(`/admin/users/${userId}/`);
+};
