@@ -4,14 +4,11 @@ from .serializers import RegistroUsuarioSerializer
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import MyTokenObtainPairSerializer # Importa nuestro nuevo serializer
-from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated # Permiso para requerir autenticación
 from .serializers import PerfilUsuarioSerializer # Importar el nuevo serializer
-from rest_framework import viewsets
-from .models import Noticia
+from .models import Noticia, Usuario
 from .serializers import NoticiaSerializer
 from .permissions import IsAdminUser # Importar nuestro permiso personalizado
-from rest_framework.permissions import IsAuthenticated
 from .models import EventoSismico
 from .serializers import EventoSismicoSerializer
 from django_filters.rest_framework import DjangoFilterBackend
@@ -19,6 +16,12 @@ from rest_framework import filters
 from .filters import EventoSismicoFilter
 from rest_framework.permissions import AllowAny
 from .serializers import UserManagementSerializer
+from rest_framework import viewsets, mixins 
+from .serializers import (
+    NoticiaSerializer,
+    UserManagementSerializer
+)
+
 
 
 Usuario = get_user_model()
@@ -118,14 +121,18 @@ class EventoSismicoViewSet(viewsets.ReadOnlyModelViewSet):
     # Campos por los que se puede ordenar (ej: /api/sismos/?ordering=magnitud o -magnitud)
     ordering_fields = ['fecha_hora_evento', 'magnitud', 'profundidad']
     
-class UserManagementViewSet(viewsets.ReadOnlyModelViewSet):
+class UserManagementViewSet(mixins.ListModelMixin,
+                            mixins.RetrieveModelMixin,
+                            mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
     """
     ViewSet para que los administradores vean y eliminen usuarios visitantes.
     - `list`: Devuelve una lista de todos los usuarios visitantes.
+    - `retrieve`: Devuelve un solo usuario.
     - `destroy`: Elimina un usuario visitante.
     """
     serializer_class = UserManagementSerializer
-    permission_classes = [IsAdminUser] # Solo los admins pueden acceder
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         """
