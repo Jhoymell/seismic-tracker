@@ -13,7 +13,7 @@ from .models import EventoSismico
 from .serializers import EventoSismicoSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
-from .filters import EventoSismicoFilter
+from .filters import EventoSismicoFilter, NoticiaFilter
 from rest_framework.permissions import AllowAny
 from .serializers import UserManagementSerializer
 from rest_framework import viewsets, mixins 
@@ -79,8 +79,11 @@ class NoticiaViewSet(viewsets.ModelViewSet):
     - `partial_update` (PATCH /<id>): Solo para administradores.
     - `destroy` (DELETE /<id>): Solo para administradores.
     """
-    queryset = Noticia.objects.all().order_by('-fecha_publicacion') # Aseguramos el orden requerido
+    queryset = Noticia.objects.all().order_by('-fecha_publicacion')
     serializer_class = NoticiaSerializer
+    # AÑADIMOS LA LÓGICA DE FILTRADO
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = NoticiaFilter
 
     def get_permissions(self):
         """

@@ -1,7 +1,7 @@
 import apiClient from './apiClient';
 
-export const getNoticias = async () => {
-  const response = await apiClient.get('/noticias/');
+export const getNoticias = async (params = {}) => { // Asegúrate de que acepte params
+  const response = await apiClient.get('/noticias/', { params });
   return response.data;
 };
 
