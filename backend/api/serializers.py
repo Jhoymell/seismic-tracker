@@ -141,3 +141,9 @@ class EventoSismicoSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventoSismico
         fields = '__all__' # Incluimos todos los campos del modelo
+        
+class UserManagementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        # Campos a mostrar en el panel de admin
+        fields = ['id', 'email', 'first_name', 'last_name', 'date_joined', 'last_login']

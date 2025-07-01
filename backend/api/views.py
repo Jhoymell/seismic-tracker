@@ -18,6 +18,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from .filters import EventoSismicoFilter
 from rest_framework.permissions import AllowAny
+from .serializers import UserManagementSerializer
 
 
 Usuario = get_user_model()
@@ -116,3 +117,18 @@ class EventoSismicoViewSet(viewsets.ReadOnlyModelViewSet):
 
     # Campos por los que se puede ordenar (ej: /api/sismos/?ordering=magnitud o -magnitud)
     ordering_fields = ['fecha_hora_evento', 'magnitud', 'profundidad']
+    
+class UserManagementViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet para que los administradores vean y eliminen usuarios visitantes.
+    - `list`: Devuelve una lista de todos los usuarios visitantes.
+    - `destroy`: Elimina un usuario visitante.
+    """
+    serializer_class = UserManagementSerializer
+    permission_classes = [IsAdminUser] # Solo los admins pueden acceder
+
+    def get_queryset(self):
+        """
+        Esta vista solo debe devolver usuarios de tipo 'VISITANTE'.
+        """
+        return Usuario.objects.filter(tipo_usuario='VISITANTE')
