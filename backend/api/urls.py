@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import RegistroUsuarioView, PerfilUsuarioView, NoticiaViewSet # Importar el ViewSet
-from .views import RegistroUsuarioView, PerfilUsuarioView, NoticiaViewSet, EventoSismicoViewSet # Importar
+from .views import RegistroUsuarioView, PerfilUsuarioView, NoticiaViewSet, EventoSismicoViewSet, UserManagementViewSet # Importar
 
 # Creamos un router
 router = DefaultRouter()
@@ -9,6 +9,7 @@ router = DefaultRouter()
 # 'noticias' será el prefijo de la URL para este recurso
 router.register(r'noticias', NoticiaViewSet, basename='noticia') # <-- REGISTRAR NUEVO VIEWSET
 router.register(r'sismos', EventoSismicoViewSet, basename='sismo') # <-- REGISTRAR NUEVO VIEWSET
+router.register(r'admin/users', UserManagementViewSet, basename='admin-user') # <-- REGISTRAR NUEVO VIEWSET
 
 # Nuestras URLs de la API ahora consisten en las del router y las que definimos manualmente
 urlpatterns = [
