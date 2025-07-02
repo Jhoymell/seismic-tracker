@@ -87,7 +87,15 @@ const MapPage = () => {
         {sismos.map(sismo => (
           <Marker key={sismo.id_evento_usgs} position={[sismo.latitud, sismo.longitud]}>
             <Popup>
-              {/* ... Contenido del Popup sin cambios ... */}
+              <div>
+                <h3>{sismo.lugar_descripcion || 'Ubicación no disponible'}</h3>
+                <p><strong>Latitud:</strong>{sismo.latitud}</p>
+                <p><strong>Longitud:</strong> {sismo.longitud}</p>
+                <p><strong>Magnitud:</strong> {sismo.magnitud} Mw</p>
+                <p><strong>Profundidad:</strong> {sismo.profundidad} km</p>
+                <p><strong>Fecha:</strong> {new Date(sismo.fecha_hora_evento).toLocaleString()}</p>
+                <a href={sismo.url_usgs} target="_blank" rel="noopener noreferrer">Más detalles en USGS</a>
+              </div>
             </Popup>
           </Marker>
         ))}
