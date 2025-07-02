@@ -21,6 +21,10 @@ from .serializers import (
     NoticiaSerializer,
     UserManagementSerializer
 )
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import PasswordChangeSerializer
 
 
 
@@ -142,3 +146,20 @@ class UserManagementViewSet(mixins.ListModelMixin,
         Esta vista solo debe devolver usuarios de tipo 'VISITANTE'.
         """
         return Usuario.objects.filter(tipo_usuario='VISITANTE')
+    
+class ChangePasswordView(APIView):
+    """
+    Vista para que un usuario autenticado cambie su propia contraseña.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            # Si la validación es exitosa, el serializer ya ha comprobado la contraseña antigua
+            user = request.user
+            user.set_password(serializer.validated_data['new_password1'])
+            user.save()
+            return Response({"detail": "Contraseña cambiada con éxito."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

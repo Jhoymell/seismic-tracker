@@ -147,3 +147,23 @@ class UserManagementSerializer(serializers.ModelSerializer):
         model = Usuario
         # Campos a mostrar en el panel de admin
         fields = ['id', 'email', 'first_name', 'last_name', 'date_joined', 'last_login']
+        
+class PasswordChangeSerializer(serializers.Serializer):
+    """
+    Serializer para el cambio de contraseña que requiere la contraseña antigua.
+    """
+    old_password = serializers.CharField(write_only=True, required=True)
+    new_password1 = serializers.CharField(write_only=True, required=True)
+    new_password2 = serializers.CharField(write_only=True, required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Tu contraseña actual es incorrecta.")
+        return value
+
+    def validate(self, data):
+        if data['new_password1'] != data['new_password2']:
+            raise serializers.ValidationError({'new_password2': "Las nuevas contraseñas no coinciden."})
+        # Aquí podrías añadir validaciones de fortaleza para la nueva contraseña si quisieras
+        return data
