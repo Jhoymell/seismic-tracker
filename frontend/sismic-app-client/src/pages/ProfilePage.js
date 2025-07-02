@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import PhoneInput from 'react-phone-number-input';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import toast, { Toaster } from 'react-hot-toast';
-
+import PasswordChangeModal from '../components/profile/PasswordChangeModal'; 
 import { getProfile, updateProfile } from '../api/user';
 import useAuthStore from '../store/authStore';
 import './ProfilePage.css';
@@ -23,20 +24,14 @@ const schema = yup.object().shape({
 const ProfilePage = () => {
   const { user, login } = useAuthStore(); // Usaremos 'login' para actualizar el store con los nuevos datos
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
-    resolver: yupResolver(schema),
-  });
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const { register, handleSubmit, control, formState: { errors, isSubmitting }, reset } = useForm();
 
-  // Efecto para cargar los datos del perfil al montar la página
   useEffect(() => {
     const loadProfile = async () => {
       try {
         const profileData = await getProfile();
-        // Usamos 'reset' de react-hook-form para rellenar el formulario
-        reset({
-          ...profileData,
-          fecha_nacimiento: profileData.fecha_nacimiento, // Ya viene en YYYY-MM-DD
-        });
+        reset(profileData);
       } catch (error) {
         toast.error("No se pudo cargar tu perfil.");
       }
@@ -84,8 +79,13 @@ const ProfilePage = () => {
             </div>
             <div className="form-group">
               <label>Teléfono</label>
-              <input type="tel" {...register('telefono')} />
-              {errors.telefono && <p className="error-message">{errors.telefono.message}</p>}
+              <Controller
+                name="telefono"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput {...field} defaultCountry="CR" international className="phone-input"/>
+                )}
+              />
             </div>
             <div className="form-group">
               <label>Foto de Perfil</label>
@@ -94,23 +94,20 @@ const ProfilePage = () => {
         </div>
 
         <div className="form-section">
-            <h4>Cambiar Contraseña (opcional)</h4>
-            <div className="form-group">
-              <label>Nueva Contraseña</label>
-              <input type="password" {...register('password')} />
-              {errors.password && <p className="error-message">{errors.password.message}</p>}
-            </div>
-            <div className="form-group">
-              <label>Confirmar Nueva Contraseña</label>
-              <input type="password" {...register('password_confirm')} />
-              {errors.password_confirm && <p className="error-message">{errors.password_confirm.message}</p>}
-            </div>
-        </div>
+            <h4>Seguridad</h4>
+            <button type="button" onClick={() => setIsPasswordModalOpen(true)}>
+              Cambiar Contraseña
+            </button>
+          </div>
 
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
         </button>
       </form>
+      {/* Renderizado condicional del modal de cambio de contraseña */}
+      {isPasswordModalOpen && (
+        <PasswordChangeModal onClose={() => setIsPasswordModalOpen(false)} />
+      )}
     </div>
   );
 };

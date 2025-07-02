@@ -101,3 +101,45 @@
   color: #c0392b; /* Rojo */
   text-decoration: line-through;
 }
+
+.phone-input .PhoneInput {
+  display: flex;
+  align-items: center;
+}
+
+/* Estilo para el campo de texto donde se escribe el número */
+.phone-input .PhoneInputInput {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border-left: none; /* Quitamos el borde izquierdo para que se una al selector de país */
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.phone-input .PhoneInputInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Estilo para el selector de país */
+.phone-input .PhoneInputCountry {
+  padding: 0 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 8px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Estilo para el icono de la bandera */
+.phone-input .PhoneInputCountryIcon {
+  width: 2em; /* Hacemos la bandera un poco más grande */
+  height: 1.5em;
+  box-shadow: 0 0 1px rgba(0,0,0,0.5); /* Un borde sutil para la bandera */
+}

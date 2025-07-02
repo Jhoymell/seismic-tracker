@@ -35,3 +35,8 @@ export const getVisitorUsers = async () => {
 export const deleteUser = async (userId) => {
     await apiClient.delete(`/admin/users/${userId}/`);
 };
+
+export const changePassword = async (passwordData) => {
+    const response = await apiClient.post('/perfil/cambiar-password/', passwordData);
+    return response.data;
+};
