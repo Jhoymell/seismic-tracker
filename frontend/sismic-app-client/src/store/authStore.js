@@ -11,6 +11,7 @@ const useAuthStore = create(
       refreshToken: null,
       user: null,
       isAuthenticated: false,
+      isSidebarOpen: false,
 
       // Acción para iniciar sesión
       login: (tokens) => {
@@ -37,11 +38,21 @@ const useAuthStore = create(
           isAuthenticated: false,
         });
       },
-
-      // Podríamos añadir una acción para refrescar el token aquí en el futuro
+      // Acción para alternar el estado del sidebar
+      openSidebar: () => set({ isSidebarOpen: true }),
+      closeSidebar: () => set({ isSidebarOpen: false }),
+      toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
     }),
     {
-      name: "auth-storage", // Nombre del item en localStorage
+      name: 'auth-storage',
+      // No queremos guardar el estado de la barra lateral en localStorage
+      partialize: (state) => ({ 
+        accessToken: state.accessToken, 
+        refreshToken: state.refreshToken,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      // Podríamos añadir una acción para refrescar el token aquí en el futuro
     }
   )
 );
