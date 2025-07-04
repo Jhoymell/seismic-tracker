@@ -9,6 +9,7 @@ from .models import EventoSismico
 
 Usuario = get_user_model()
 
+# Serializer para el registro de usuarios
 class RegistroUsuarioSerializer(serializers.ModelSerializer):
     # Campo para la confirmación de la contraseña, no se guarda en el modelo
     password_confirm = serializers.CharField(write_only=True, style={'input_type': 'password'})
@@ -70,26 +71,35 @@ class RegistroUsuarioSerializer(serializers.ModelSerializer):
 
         return super().create(validated_data)
     
+# Serializer personalizado para el login con JWT
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        # Obtenemos el token por defecto
         token = super().get_token(user)
 
-        # Añadimos claims (datos) personalizados al payload del token
+        # Añadimos claims (datos) personalizados al token JWT
+        token['username'] = user.username
         token['email'] = user.email
         token['tipo_usuario'] = user.tipo_usuario
-        # Puedes añadir más datos si los necesitas en el frontend
-        # token['first_name'] = user.first_name
+        token['first_name'] = user.first_name
+
+        # --- INICIO DE LA SOLUCIÓN ---
+        # Nos aseguramos de pasar la URL (un string) y no el objeto de archivo
+        if user.ruta_fotografia:
+            token['ruta_fotografia'] = user.ruta_fotografia.url # ¡La clave está en el .url!
+        else:
+            token['ruta_fotografia'] = None
+        # --- FIN DE LA SOLUCIÓN ---
 
         return token
 
     def validate(self, attrs):
+        # Envía la señal de login exitoso
         data = super().validate(attrs)
         user_logged_in.send(sender=self.user.__class__, request=self.context.get('request'), user=self.user)
         return data
     
-
+# Serializer para el perfil del usuario autenticado
 class PerfilUsuarioSerializer(serializers.ModelSerializer):
     # Hacemos los campos de contraseña opcionales y solo de escritura
     password = serializers.CharField(write_only=True, required=False, style={'input_type': 'password'})
@@ -99,7 +109,6 @@ class PerfilUsuarioSerializer(serializers.ModelSerializer):
         model = Usuario
         # Campos que el usuario puede ver y modificar
         fields = ['id', 'email', 'username', 'first_name', 'last_name', 'telefono', 'fecha_nacimiento', 'ruta_fotografia', 'password', 'password_confirm']
-
         # El email y username no deben ser modificables en este endpoint
         read_only_fields = ['id', 'email', 'username']
 
@@ -131,23 +140,27 @@ class PerfilUsuarioSerializer(serializers.ModelSerializer):
         # Llama al método update del padre para actualizar el resto de los campos
         return super().update(instance, validated_data)
 
+# Serializer para las noticias
 class NoticiaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Noticia
         fields = ['id', 'titulo', 'contenido', 'fecha_publicacion']
         read_only_fields = ['fecha_publicacion'] # La fecha se establece automáticamente
 
+# Serializer para los eventos sísmicos
 class EventoSismicoSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventoSismico
         fields = '__all__' # Incluimos todos los campos del modelo
         
+# Serializer para la gestión de usuarios en el panel de admin
 class UserManagementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         # Campos a mostrar en el panel de admin
         fields = ['id', 'email', 'first_name', 'last_name', 'date_joined', 'last_login']
         
+# Serializer para el cambio de contraseña seguro
 class PasswordChangeSerializer(serializers.Serializer):
     """
     Serializer para el cambio de contraseña que requiere la contraseña antigua.

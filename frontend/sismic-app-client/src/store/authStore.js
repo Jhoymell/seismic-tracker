@@ -23,7 +23,10 @@ const useAuthStore = create(
           user: {
             id: decodedToken.user_id,
             email: decodedToken.email,
-            tipo_usuario: decodedToken.tipo_usuario, // <-- NUEVA LÍNEA
+            tipo_usuario: decodedToken.tipo_usuario, 
+            username: decodedToken.username, // Asegúrate de que el token contiene este campo
+            first_name: decodedToken.first_name, // Añadido para mostrar el nombre en el header
+            ruta_fotografia: decodedToken.ruta_fotografia , // Añadido para la foto de perfil
           },
           isAuthenticated: true,
         });
@@ -42,6 +45,11 @@ const useAuthStore = create(
       openSidebar: () => set({ isSidebarOpen: true }),
       closeSidebar: () => set({ isSidebarOpen: false }),
       toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+
+      // Acción para actualizar el perfil del usuario en el store
+      updateUserProfile: (profileData) => set((state) => ({
+        user: { ...state.user, ...profileData }
+      })),
     }),
     {
       name: 'auth-storage',
