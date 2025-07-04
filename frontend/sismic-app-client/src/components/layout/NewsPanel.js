@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from 'react';
 import { getNoticias } from '../../api/news';
-import useInterval from '../../hooks/useInterval'; // <-- Importamos nuestro nuevo hook
+import useInterval from '../../hooks/useInterval'; // Usamos nuestro hook robusto
 import './NewsPanel.css';
+import toast from 'react-hot-toast';
 
 // NewsPanel: Componente lateral que muestra las noticias recientes y realiza polling automático
 const NewsPanel = () => {
@@ -10,64 +10,27 @@ const NewsPanel = () => {
   const [noticias, setNoticias] = useState([]);
   // Estado para mostrar indicador de carga
   const [loading, setLoading] = useState(true);
-  // Ref para guardar la fecha de la noticia más reciente
-  const latestNewsTimestamp = useRef(null);
 
-  // Función para cargar las noticias iniciales al montar el componente
-  const fetchInitialNews = useCallback(async () => {
-    setLoading(true);
+  // Función para cargar las noticias
+  const fetchNews = async () => {
     try {
       // Trae todas las noticias y muestra solo las 10 más recientes
       const data = await getNoticias();
       setNoticias(data.slice(0, 10));
-      if (data.length > 0) {
-        // Guarda la fecha de la noticia más reciente para el polling
-        latestNewsTimestamp.current = data[0].fecha_publicacion;
-      }
     } catch (error) {
-      console.error("Error al cargar noticias iniciales:", error);
+      console.error("Error al cargar noticias:", error);
     } finally {
-      setLoading(false);
+      if(loading) setLoading(false);
     }
-  }, []);
+  };
 
   // useEffect para cargar las noticias al montar el componente
   useEffect(() => {
-    fetchInitialNews();
-  }, [fetchInitialNews]);
+    fetchNews();
+  }, []);
 
-  // Polling automático usando el custom hook useInterval
-  useInterval(async () => {
-    // Si no hay timestamp, no hace polling
-    if (!latestNewsTimestamp.current) return;
-
-    console.log(`[NewsPanel] Ejecutando poll de noticias a las ${new Date().toLocaleTimeString()}`);
-
-    try {
-      // Pide solo noticias publicadas después de la última conocida
-      const params = {
-        published_after: latestNewsTimestamp.current,
-        _cacheBust: Date.now(), // Evita caché
-      };
-      const nuevasNoticias = await getNoticias(params);
-
-      if (nuevasNoticias.length > 0) {
-        // Notifica al usuario si hay nuevas noticias
-        toast.success(`${nuevasNoticias.length} nueva(s) noticia(s) publicada(s)!`);
-        setNoticias(prevNoticias => {
-          // Combina las nuevas con las anteriores, evitando duplicados por id
-          const combined = [...nuevasNoticias, ...prevNoticias];
-          const uniqueNews = Array.from(new Set(combined.map(a => a.id)))
-                               .map(id => combined.find(a => a.id === id));
-          return uniqueNews.slice(0, 10); // Solo las 10 más recientes
-        });
-        // Actualiza el timestamp para el siguiente polling
-        latestNewsTimestamp.current = nuevasNoticias[0].fecha_publicacion;
-      }
-    } catch (error) {
-      console.error("Error durante el polling de noticias:", error);
-    }
-  }, 30000); // Ejecuta cada 30 segundos
+  // El hook useInterval es más fiable para polling
+  useInterval(fetchNews, 30000); // Llama a fetchNews cada 30 segundos
 
   return (
     // Panel lateral de noticias

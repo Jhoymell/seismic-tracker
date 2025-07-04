@@ -26,6 +26,7 @@ const ProfilePage = () => {
 
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const { register, handleSubmit, control, formState: { errors, isSubmitting }, reset } = useForm();
+  const { updateUserProfile } = useAuthStore();
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -50,6 +51,11 @@ const ProfilePage = () => {
 
       const updatedUser = await updateProfile(profileData);
       toast.success('Perfil actualizado correctamente.', { id: loadingToast });
+      // Actualizamos el store con los nuevos datos del usuario
+      updateUserProfile({
+                first_name: updatedUser.first_name,
+                ruta_fotografia: updatedUser.ruta_fotografia,
+            });
 
       // Actualizamos el estado global con el nuevo usuario
       const { accessToken, refreshToken } = useAuthStore.getState();
