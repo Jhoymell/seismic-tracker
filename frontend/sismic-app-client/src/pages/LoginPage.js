@@ -6,6 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { Button, TextField, Box, Typography, Container, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion'; // <-- Importar motion
+import { jwtDecode } from 'jwt-decode';
 
 import { loginUser } from '../api/auth';
 import useAuthStore from '../store/authStore';
@@ -28,9 +29,19 @@ const LoginPage = () => {
 
   const onSubmit = async (data) => {
     try {
+      // 1. Llama a la API para obtener los tokens
       const tokens = await loginUser(data);
+      
+      // 2. Decodifica el token para obtener el nombre del usuario
+      const decodedToken = jwtDecode(tokens.access);
+      
+      // 3. Guarda el estado global de autenticación con la acción de login
       login(tokens);
-      toast.success('¡Bienvenido de nuevo!');
+      
+      // 4. Muestra una notificación de éxito personalizada
+      toast.success(`¡Bienvenido de nuevo, ${decodedToken.first_name}!`);
+      
+      // 5. Redirige al usuario a la página del mapa
       navigate('/mapa');
     } catch (error) {
       toast.error('Correo o contraseña incorrectos.');
