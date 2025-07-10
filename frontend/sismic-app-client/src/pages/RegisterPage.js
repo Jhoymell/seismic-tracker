@@ -1,92 +1,59 @@
-import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
-import zxcvbn from "zxcvbn";
-import PhoneInput from "react-phone-number-input";
-import { registerUser } from "../api/auth";
-// Importaremos un componente de CSS para los estilos
-import "./RegisterPage.css";
+import React, { useState, useEffect } from 'react';
+import { useForm, FormProvider } from 'react-hook-form'; // FormProvider es clave para formularios por pasos
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+import zxcvbn from 'zxcvbn';
 
-// 1. Definir el Esquema de Validación con Yup
-const schema = yup.object().shape({
-  first_name: yup.string().required("El nombre es obligatorio"),
-  last_name: yup.string().required("Los apellidos son obligatorios"),
-  email: yup
-    .string()
-    .email("Debe ser un correo válido")
-    .required("El correo es obligatorio")
-    .matches(
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      "El correo no tiene un formato válido"
-    ),
-  username: yup
-    .string()
-    .required("Un nombre de usuario es obligatorio (puede ser tu correo)"),
-  telefono: yup.string().required("El teléfono es obligatorio"),
-  password: yup
-    .string()
-    .required("La contraseña es obligatoria")
-    .min(8, "Debe tener al menos 8 caracteres")
-    .matches(/[A-Z]/, "Debe contener al menos una mayúscula")
-    .matches(/[a-z]/, "Debe contener al menos una minúscula")
-    .matches(/[0-9]/, "Debe contener al menos un número")
-    .matches(/[^A-Za-z0-9]/, "Debe contener al menos un carácter especial"),
-  password_confirm: yup
-    .string()
-    .oneOf([yup.ref("password"), null], "Las contraseñas deben coincidir")
-    .required("Debes confirmar la contraseña"),
-  fecha_nacimiento: yup
-    .date()
-    .required("La fecha de nacimiento es obligatoria")
-    .typeError("Por favor, introduce una fecha válida")
-    .max(
-      new Date(Date.now() - 24 * 60 * 60 * 1000),
-      "La fecha debe ser anterior a hoy"
-    ),
-});
+// Importaciones de MUI
+import { Container, Box, Typography, Stepper, Step, StepLabel, Button, CircularProgress } from '@mui/material';
+
+// Importaciones de nuestros componentes y lógica
+import { registerUser } from '../api/auth';
+import AccountStep from '../components/register/AccountStep';
+import PersonalStep from '../components/register/PersonalStep';
+import { accountSchema, personalSchema } from '../components/register/validationSchemas';
+
+// Definimos nuestros pasos y sus esquemas de validación correspondientes
+const steps = ['Datos de Cuenta', 'Información Personal'];
+const stepSchemas = [accountSchema, personalSchema];
 
 const RegisterPage = () => {
-  const [passwordStrength, setPasswordStrength] = useState(0);
+  // --- CAMBIO 1: Añadimos estado para controlar el paso actual ---
+  const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
-  const [passwordChecks, setPasswordChecks] = useState({
-    length: false,
-    uppercase: false,
-    lowercase: false,
-    number: false,
-    specialChar: false,
-  });
 
-  // 2. Configurar React Hook Form
-  const {
-    register,
-    handleSubmit,
-    watch,
-    control,
-    formState: { errors, isSubmitting, isValid },
-  } = useForm({
-    resolver: yupResolver(schema),
-    mode: "onChange", // Para validar en tiempo real
-  });
-
-  // Observamos el campo de la contraseña para el indicador de fortaleza
-  const passwordValue = watch("password");
-
-  // Actualizar el indicador de fortaleza en tiempo real
-  React.useEffect(() => {
-    if (passwordValue) {
-      const result = zxcvbn(passwordValue);
-      setPasswordStrength(result.score); // score va de 0 a 4
-    } else {
-      setPasswordStrength(0);
+  const currentValidationSchema = stepSchemas[activeStep];
+  
+  const methods = useForm({
+    resolver: yupResolver(currentValidationSchema),
+    mode: 'onChange',
+    defaultValues: {
+      email: '',
+      username: '',
+      password: '',
+      password_confirm: '',
+      first_name: '',
+      last_name: '',
+      telefono: '',
+      fecha_nacimiento: '',
     }
-  }, [passwordValue]);
+  });
 
-  React.useEffect(() => {
+  // --- CAMBIO 2: La lógica de la contraseña ahora vive aquí, en el componente padre ---
+  const [passwordStrength, setPasswordStrength] = useState({ score: 0, label: 'N/A' });
+  const [passwordChecks, setPasswordChecks] = useState({ length: false, uppercase: false, lowercase: false, number: false, specialChar: false });
+  
+  // Observamos el valor de la contraseña desde el formulario principal
+  const passwordValue = methods.watch('password', '');
+
+  useEffect(() => {
+    const result = zxcvbn(passwordValue || '');
+    const strengthLabels = ["Muy Débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"];
+    setPasswordStrength({ score: result.score, label: strengthLabels[result.score] });
     setPasswordChecks({
-      length: (passwordValue || "").length >= 8,
+      length: passwordValue.length >= 8,
       uppercase: /[A-Z]/.test(passwordValue),
       lowercase: /[a-z]/.test(passwordValue),
       number: /[0-9]/.test(passwordValue),
@@ -94,186 +61,93 @@ const RegisterPage = () => {
     });
   }, [passwordValue]);
 
-  // 3. Manejador del envío del formulario
-  const onSubmit = async (data) => {
-    const submissionData = { ...data };
-    // Formatear fecha si es Date
-    if (submissionData.fecha_nacimiento instanceof Date) {
-      const year = submissionData.fecha_nacimiento.getFullYear();
-      const month = String(
-        submissionData.fecha_nacimiento.getMonth() + 1
-      ).padStart(2, "0");
-      const day = String(submissionData.fecha_nacimiento.getDate()).padStart(
-        2,
-        "0"
-      );
-      submissionData.fecha_nacimiento = `${year}-${month}-${day}`;
-    }
-    try {
-      const response = await registerUser(submissionData);
-      toast.success(response.message);
-      setTimeout(() => navigate("/login"), 2000);
-    } catch (error) {
-      // Mejor manejo de errores de la API
-      if (error.response && error.response.data) {
-        const apiErrors = error.response.data;
-        if (typeof apiErrors === "string") {
-          toast.error(apiErrors);
-        } else {
-          Object.keys(apiErrors).forEach((key) => {
-            const message = Array.isArray(apiErrors[key])
-              ? apiErrors[key].join(", ")
-              : apiErrors[key];
-            toast.error(`${key}: ${message}`);
-          });
-        }
-      } else if (error.message) {
-        toast.error(error.message);
-      } else {
-        toast.error("Ocurrió un error inesperado. Inténtalo de nuevo.");
-      }
+  // --- CAMBIO 3: Funciones para navegar entre pasos ---
+  const handleNext = async () => {
+    const isStepValid = await methods.trigger(); // Valida solo el paso actual
+    if (isStepValid) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
   };
 
-  const strengthLabels = [
-    "Muy Débil",
-    "Débil",
-    "Regular",
-    "Fuerte",
-    "Muy Fuerte",
-  ];
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
 
-  // 4. Renderizar el Formulario JSX
+  const onSubmit = async (data) => {
+    const loadingToast = toast.loading('Registrando tu cuenta...');
+    const submissionData = { ...data };
+    if (submissionData.fecha_nacimiento instanceof Date) {
+        const year = submissionData.fecha_nacimiento.getFullYear();
+        const month = String(submissionData.fecha_nacimiento.getMonth() + 1).padStart(2, '0');
+        const day = String(submissionData.fecha_nacimiento.getDate()).padStart(2, '0');
+        submissionData.fecha_nacimiento = `${year}-${month}-${day}`;
+    }
+    try {
+        const response = await registerUser(submissionData);
+        toast.success(response.message, { id: loadingToast });
+        setTimeout(() => navigate('/login'), 2000);
+    } catch (error) {
+        toast.error('Hubo un error al registrar la cuenta.', { id: loadingToast });
+    }
+  };
+
   return (
-    <div className="register-container">
+    <Container component="main" maxWidth="sm">
       <Toaster position="top-center" />
-      <form onSubmit={handleSubmit(onSubmit)} className="register-form">
-        <h2>Crear una Cuenta</h2>
+      <Box
+        sx={{
+          marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center',
+          backgroundColor: 'background.paper', padding: { xs: 2, sm: 4 }, borderRadius: '1rem', boxShadow: 3,
+        }}
+      >
+        <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+          Crear una Cuenta
+        </Typography>
+        
+        {/* --- CAMBIO 4: El JSX ahora incluye el Stepper y renderiza los pasos condicionalmente --- */}
+        <Stepper activeStep={activeStep} sx={{ mb: 4, width: '100%' }}>
+          {steps.map((label) => (
+            <Step key={label}><StepLabel>{label}</StepLabel></Step>
+          ))}
+        </Stepper>
 
-        <div className="form-group">
-          <input type="text" {...register("first_name")} placeholder="Nombre" />
-          {errors.first_name && (
-            <p className="error-message">{errors.first_name.message}</p>
+        <FormProvider {...methods}>
+          <form id="register-form" onSubmit={methods.handleSubmit(onSubmit)}>
+            <AnimatePresence mode="wait">
+              {activeStep === 0 && (
+                <AccountStep 
+                  key="step1" 
+                  passwordStrength={passwordStrength} 
+                  passwordChecks={passwordChecks} 
+                />
+              )}
+              {activeStep === 1 && <PersonalStep key="step2" />}
+            </AnimatePresence>
+          </form>
+        </FormProvider>
+        
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 4 }}>
+          <Button disabled={activeStep === 0} onClick={handleBack}>
+            Atrás
+          </Button>
+          
+          {activeStep < steps.length - 1 ? (
+            <Button variant="contained" onClick={handleNext}>
+              Siguiente
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              form="register-form"
+              variant="contained"
+              disabled={methods.formState.isSubmitting}
+            >
+              {methods.formState.isSubmitting ? <CircularProgress size={24}/> : 'Crear Cuenta'}
+            </Button>
           )}
-        </div>
-
-        <div className="form-group">
-          <input
-            type="text"
-            {...register("last_name")}
-            placeholder="Apellidos"
-          />
-          {errors.last_name && (
-            <p className="error-message">{errors.last_name.message}</p>
-          )}
-        </div>
-
-        <div className="form-group">
-          <input
-            type="email"
-            {...register("email")}
-            placeholder="Correo Electrónico"
-          />
-          {errors.email && (
-            <p className="error-message">{errors.email.message}</p>
-          )}
-        </div>
-
-        <div className="form-group">
-          <input
-            type="text"
-            {...register("username")}
-            placeholder="Nombre de Usuario"
-          />
-          {errors.username && (
-            <p className="error-message">{errors.username.message}</p>
-          )}
-        </div>
-
-        <div className="form-group">
-          <Controller
-            name="telefono"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <PhoneInput
-                {...field}
-                placeholder="Número de teléfono"
-                defaultCountry="CR" // El país por defecto será Costa Rica
-                international
-                className="phone-input" // Clase para aplicar nuestros estilos
-              />
-            )}
-          />
-          {errors.telefono && (
-            <p className="error-message">{errors.telefono.message}</p>
-          )}
-        </div>
-
-        <div className="form-group">
-          <input
-            type="date"
-            {...register("fecha_nacimiento")}
-            placeholder="Fecha de Nacimiento"
-          />
-          {errors.fecha_nacimiento && (
-            <p className="error-message">{errors.fecha_nacimiento.message}</p>
-          )}
-        </div>
-
-        <div className="form-group">
-          <input
-            type="password"
-            {...register("password")}
-            placeholder="Contraseña"
-          />
-          {errors.password && (
-            <p className="error-message">{errors.password.message}</p>
-          )}
-        </div>
-
-        {/* Indicador de Fortaleza de Contraseña  */}
-        <div className="password-strength-meter">
-          <div className={`strength-bar strength-${passwordStrength}`}></div>
-          <p>
-            Fortaleza:{" "}
-            {passwordValue ? strengthLabels[passwordStrength] : "N/A"}
-          </p>
-        </div>
-        <div className="password-checklist">
-          <p className={passwordChecks.length ? "valid" : "invalid"}>
-            ✓ Al menos 8 caracteres
-          </p>
-          <p className={passwordChecks.lowercase ? "valid" : "invalid"}>
-            ✓ Al menos una minúscula
-          </p>
-          <p className={passwordChecks.uppercase ? "valid" : "invalid"}>
-            ✓ Al menos una mayúscula
-          </p>
-          <p className={passwordChecks.number ? "valid" : "invalid"}>
-            ✓ Al menos un número
-          </p>
-          <p className={passwordChecks.specialChar ? "valid" : "invalid"}>
-            ✓ Al menos un carácter especial
-          </p>
-        </div>
-
-        <div className="form-group">
-          <input
-            type="password"
-            {...register("password_confirm")}
-            placeholder="Confirmar Contraseña"
-          />
-          {errors.password_confirm && (
-            <p className="error-message">{errors.password_confirm.message}</p>
-          )}
-        </div>
-
-        <button type="submit" disabled={!isValid || isSubmitting}>
-          {isSubmitting ? "Registrando..." : "Crear Cuenta"}
-        </button>
-      </form>
-    </div>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
