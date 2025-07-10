@@ -16,3 +16,24 @@ code {
     height: 100%;
     width: 100%;
 }
+
+/* Estilos para integrar react-phone-number-input con MUI */
+.phone-input-mui .PhoneInputInput {
+  width: 100%;
+  padding: 16.5px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.23);
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: transparent;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+
+.phone-input-mui .PhoneInputInput:hover {
+  border-color: rgba(255, 255, 255, 0.87);
+}
+
+.phone-input-mui .PhoneInputInput:focus {
+  outline: 2px solid #2196f3; /* Color primario del tema */
+  border-color: #2196f3;
+}
