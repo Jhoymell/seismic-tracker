@@ -6,28 +6,41 @@ import NewsPanel from './NewsPanel';
 import Footer from './Footer';
 import UserHeader from './UserHeader';
 import useAuthStore from '../../store/authStore';
-import './MainLayout.css';
 
-// MainLayout: Estructura principal de la aplicación
-// Incluye Header, navegación lateral, contenido principal, panel derecho y Footer
 const MainLayout = ({ children }) => {
-  // Obtiene el estado de autenticación del usuario
   const { isAuthenticated } = useAuthStore();
 
   return (
-    // Contenedor principal con layout vertical y altura mínima de pantalla completa
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Header superior */}
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      // Forzamos a que el layout principal ocupe exactamente el 100% de la altura de la ventana
+      height: '100vh', 
+    }}>
       <Header />
-      {/* Zona central: navegación lateral, contenido principal y panel derecho */}
-      <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
-        {/* Menú lateral izquierdo */}
+      {/* Este Box contendrá las columnas laterales y el contenido principal */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexGrow: 1, 
+        // --- CAMBIO CLAVE 1: Evitamos que este contenedor se desborde ---
+        overflow: 'hidden' 
+      }}>
         <LeftNav />
-        {/* Contenido principal de la página con scroll vertical */}
-        <Box component="main" sx={{ flexGrow: 1, p: 3, overflowY: 'auto' }}>
+        
+        {/* Este Box es el área de contenido principal */}
+        <Box 
+          component="main" 
+          sx={{ 
+            flexGrow: 1, 
+            p: 3, 
+            // --- CAMBIO CLAVE 2: Le decimos que solo él debe tener scroll si es necesario ---
+            overflowY: 'auto' 
+          }}
+        >
           {children}
         </Box>
-        {/* --- SOLUCIÓN DE VISIBILIDAD --- */}
+        
+        {/* Este Box es el panel derecho completo */}
         {isAuthenticated && (
           <Box 
             component="aside"
@@ -36,7 +49,9 @@ const MainLayout = ({ children }) => {
               borderLeft: '1px solid', 
               borderColor: 'divider', 
               display: 'flex', 
-              flexDirection: 'column' 
+              flexDirection: 'column',
+              // Hacemos que también tenga su propio scroll si su contenido es muy largo
+              overflowY: 'auto' 
             }}
           >
             <UserHeader />
@@ -44,8 +59,7 @@ const MainLayout = ({ children }) => {
           </Box>
         )}
       </Box>
-      {/* Footer fijo al final */}
-      <Footer />
+      {/* El Footer ahora está fuera del contenedor con scroll, por lo que no se moverá */}
     </Box>
   );
 };
