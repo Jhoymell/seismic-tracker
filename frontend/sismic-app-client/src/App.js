@@ -25,6 +25,10 @@ import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminRoute from './components/auth/AdminRoute';
 
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
+
 // Creamos un sub-componente para poder usar el hook 'useLocation'
 // que es necesario para que AnimatePresence funcione con las rutas.
 function AppContent() {
@@ -66,12 +70,15 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        {/* El componente AppContent contiene toda la lógica de renderizado
-            para asegurar que se renderice una sola vez y de forma correcta. */}
-        <AppContent />
-      </Router>
+      {/* Envolvemos la app con el LocalizationProvider */}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <CssBaseline />
+        <Router>
+          {/* El componente AppContent contiene toda la lógica de renderizado
+              para asegurar que se renderice una sola vez y de forma correcta. */}
+          <AppContent />
+        </Router>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }
