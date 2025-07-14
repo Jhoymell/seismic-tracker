@@ -1,7 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { getNoticias, createNoticia, updateNoticia, deleteNoticia } from '../../api/news';
-import toast from 'react-hot-toast';
-import NewsForm from './NewsForm'; // Importaremos el formulario
+import React, { useState, useEffect } from "react";
+import {
+  getNoticias,
+  createNoticia,
+  updateNoticia,
+  deleteNoticia,
+} from "../../api/news";
+import toast from "react-hot-toast";
+import NewsForm from "./NewsForm"; // Importaremos el formulario
+//Importaciones de MUI
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Typography,
+  CircularProgress,
+  Button,
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 const NewsManagement = () => {
   const [news, setNews] = useState([]);
@@ -35,24 +57,28 @@ const NewsManagement = () => {
   };
 
   const handleDelete = async (newsId) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta noticia?')) {
+    if (window.confirm("¿Estás seguro de que quieres eliminar esta noticia?")) {
       try {
         await deleteNoticia(newsId);
-        toast.success('Noticia eliminada.');
+        toast.success("Noticia eliminada.");
         fetchNews();
       } catch (error) {
-        toast.error('No se pudo eliminar la noticia.');
+        toast.error("No se pudo eliminar la noticia.");
       }
     }
   };
 
   const handleFormSubmit = async (data) => {
     const isEditing = !!editingNews;
-    const apiCall = isEditing ? updateNoticia(editingNews.id, data) : createNoticia(data);
+    const apiCall = isEditing
+      ? updateNoticia(editingNews.id, data)
+      : createNoticia(data);
 
     try {
       await apiCall;
-      toast.success(`Noticia ${isEditing ? 'actualizada' : 'creada'} con éxito.`);
+      toast.success(
+        `Noticia ${isEditing ? "actualizada" : "creada"} con éxito.`
+      );
       setIsModalOpen(false);
       fetchNews();
     } catch (error) {
@@ -60,33 +86,53 @@ const NewsManagement = () => {
     }
   };
 
-  if (loading) return <p>Cargando noticias...</p>;
+  if (loading) return <CircularProgress />;
 
   return (
     <div>
-      <h3>Gestionar Noticias</h3>
-      <button onClick={handleCreate} className="create-btn">Crear Nueva Noticia</button>
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Fecha de Publicación</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {news.map(item => (
-            <tr key={item.id}>
-              <td>{item.titulo}</td>
-              <td>{new Date(item.fecha_publicacion).toLocaleString()}</td>
-              <td>
-                <button onClick={() => handleEdit(item)} className="action-btn edit-btn">Editar</button>
-                <button onClick={() => handleDelete(item.id)} className="action-btn delete-btn">Eliminar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Button
+        variant="contained"
+        startIcon={<AddCircleIcon />}
+        onClick={handleCreate}
+        sx={{ mb: 2 }}
+      >
+        Crear Nueva Noticia
+      </Button>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Título</TableCell>
+              <TableCell>Fecha de Publicación</TableCell>
+              <TableCell align="right">Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {news.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.titulo}</TableCell>
+                <TableCell>
+                  {new Date(item.fecha_publicacion).toLocaleString()}
+                </TableCell>
+                <TableCell align="right">
+                  <IconButton
+                    onClick={() => handleEdit(item)}
+                    color="secondary"
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDelete(item.id)}
+                    color="error"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {isModalOpen && (
         <NewsForm
