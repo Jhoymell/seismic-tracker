@@ -12,6 +12,13 @@ const useAuthStore = create(
       user: null,
       isAuthenticated: false,
       isSidebarOpen: false,
+      isNewsPanelVisible: true, // Añadido para controlar la visibilidad del panel de noticias
+      // Acción para alternar la visibilidad del panel de noticias
+      toggleNewsPanel: () =>
+        set((state) => ({ isNewsPanelVisible: !state.isNewsPanelVisible })),
+      // Acción para abrir el sidebar
+      toggleSidebar: () =>
+        set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
       // Acción para iniciar sesión
       login: (tokens) => {
@@ -23,10 +30,10 @@ const useAuthStore = create(
           user: {
             id: decodedToken.user_id,
             email: decodedToken.email,
-            tipo_usuario: decodedToken.tipo_usuario, 
+            tipo_usuario: decodedToken.tipo_usuario,
             username: decodedToken.username, // Asegúrate de que el token contiene este campo
             first_name: decodedToken.first_name, // Añadido para mostrar el nombre en el header
-            ruta_fotografia: decodedToken.ruta_fotografia , // Añadido para la foto de perfil
+            ruta_fotografia: decodedToken.ruta_fotografia, // Añadido para la foto de perfil
           },
           isAuthenticated: true,
         });
@@ -44,18 +51,20 @@ const useAuthStore = create(
       // Acción para alternar el estado del sidebar
       openSidebar: () => set({ isSidebarOpen: true }),
       closeSidebar: () => set({ isSidebarOpen: false }),
-      toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+      toggleSidebar: () =>
+        set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
       // Acción para actualizar el perfil del usuario en el store
-      updateUserProfile: (profileData) => set((state) => ({
-        user: { ...state.user, ...profileData }
-      })),
+      updateUserProfile: (profileData) =>
+        set((state) => ({
+          user: { ...state.user, ...profileData },
+        })),
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       // No queremos guardar el estado de la barra lateral en localStorage
-      partialize: (state) => ({ 
-        accessToken: state.accessToken, 
+      partialize: (state) => ({
+        accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
         isAuthenticated: state.isAuthenticated,
