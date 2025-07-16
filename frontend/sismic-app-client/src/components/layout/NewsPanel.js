@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getNoticias } from '../../api/news';
 import useInterval from '../../hooks/useInterval'; // Usamos nuestro hook robusto
 import './NewsPanel.css';
-import toast from 'react-hot-toast';
+
 
 // NewsPanel: Componente lateral que muestra las noticias recientes y realiza polling automático
 const NewsPanel = () => {
@@ -11,29 +11,27 @@ const NewsPanel = () => {
   // Estado para mostrar indicador de carga
   const [loading, setLoading] = useState(true);
 
-  // Función para cargar las noticias
-  const fetchNews = async () => {
+  // Usamos useCallback para optimizar la función de fetch
+  const fetchNews = useCallback(async () => {
     try {
-      // Trae todas las noticias y muestra solo las 10 más recientes
       const data = await getNoticias();
-      setNoticias(data.slice(0, 10));
+      setNoticias(data.slice(0, 10)); // Muestra hasta 10 noticias
     } catch (error) {
       console.error("Error al cargar noticias:", error);
     } finally {
       if(loading) setLoading(false);
     }
-  };
+  }, [loading]); // Se vuelve a crear solo si 'loading' cambia
 
-  // useEffect para cargar las noticias al montar el componente
+  // Carga inicial
   useEffect(() => {
     fetchNews();
-  }, []);
+  }, [fetchNews]);
 
-  // El hook useInterval es más fiable para polling
-  useInterval(fetchNews, 30000); // Llama a fetchNews cada 30 segundos
+  // Polling para nuevas noticias cada 30 segundos
+  useInterval(fetchNews, 30000);
 
   return (
-    // Panel lateral de noticias
     <aside className="news-panel">
       <h2>Noticias Recientes</h2>
       <div className="news-list">
@@ -42,11 +40,12 @@ const NewsPanel = () => {
         ) : noticias.length > 0 ? (
           noticias.map(noticia => (
             <div key={noticia.id} className="news-item">
-              {/* Título de la noticia */}
               <h4>{noticia.titulo}</h4>
-              {/* Muestra solo los primeros 100 caracteres del contenido */}
-              <p>{noticia.contenido.substring(0, 100)}...</p>
-              {/* Fecha de publicación formateada */}
+              {/* Renderiza el contenido HTML enriquecido de la noticia */}
+              <div 
+                className="news-content"
+                dangerouslySetInnerHTML={{ __html: noticia.contenido }} 
+              />
               <span className="news-date">
                 {new Date(noticia.fecha_publicacion).toLocaleDateString()}
               </span>
