@@ -41,3 +41,18 @@
     color: #888;
     text-align: right;
 }
+
+
+.news-content-full p {
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.news-content-full strong {
+  color: inherit; /* Hereda el color del tema */
+}
+
+.news-content-full ul, .news-content-full ol {
+  padding-left: 20px;
+}
