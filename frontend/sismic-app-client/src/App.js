@@ -27,12 +27,21 @@ import AdminRoute from './components/auth/AdminRoute';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from './store/authStore';
+import useInactivityTimeout from './hooks/useInactivityTimeout';
+
+
 
 
 // Creamos un sub-componente para poder usar el hook 'useLocation'
 // que es necesario para que AnimatePresence funcione con las rutas.
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const {logout, isAuthenticated} = useAuthStore();
+
+  useInactivityTimeout(isAuthenticated ? logout : () => {},navigate, 20 * 60 * 1000); 
 
   return (
     <MainLayout>

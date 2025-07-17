@@ -99,11 +99,13 @@ const NewsPanel = () => {
                         className="news-content"
                         dangerouslySetInnerHTML={{
                           __html:
-                            noticia.contenido.substring(0, 120) +
-                            (noticia.contenido.length > 120 ? "..." : ""),
+                            noticia.contenido.substring(0, 150) +
+                            (noticia.contenido.length > 150 ? "..." : ""),
                         }}
                       />
+
                     }
+                    secondaryTypographyProps={{ component: 'div' }}
                   />
                   {/* Botón Ver más si el contenido es largo */}
                   {noticia.contenido.length > 120 && (
