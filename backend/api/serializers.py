@@ -31,13 +31,12 @@ class RegistroUsuarioSerializer(serializers.ModelSerializer):
         # Por ahora, dejémoslo como un campo que el usuario puede enviar (puede ser igual al email).
 
         extra_kwargs = {
-            'password': {'write_only': True, 'style': {'input_type': 'password'}}, # No leer la contraseña, solo escribirla
+            'password': {'write_only': True, 'style': {'input_type': 'password'}},
             'first_name': {'required': True},
             'last_name': {'required': True},
             'email': {'required': True},
-            'fecha_nacimiento': {'required': False}, # Ajusta según los requisitos exactos
-            'ruta_fotografia': {'read_only': True} # La ruta de la foto se generará, no la enviará el usuario directamente.
-                                                    # La subida del archivo se manejará en la vista.
+            'fecha_nacimiento': {'required': False},
+            # 'ruta_fotografia': {'read_only': True}
         }
 
     def validate_username(self, value):
@@ -101,44 +100,21 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     
 # Serializer para el perfil del usuario autenticado
 class PerfilUsuarioSerializer(serializers.ModelSerializer):
-    # Hacemos los campos de contraseña opcionales y solo de escritura
-    password = serializers.CharField(write_only=True, required=False, style={'input_type': 'password'})
-    password_confirm = serializers.CharField(write_only=True, required=False, style={'input_type': 'password'})
+    ruta_fotografia_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Usuario
-        # Campos que el usuario puede ver y modificar
-        fields = ['id', 'email', 'username', 'first_name', 'last_name', 'telefono', 'fecha_nacimiento', 'ruta_fotografia', 'password', 'password_confirm']
-        # El email y username no deben ser modificables en este endpoint
-        read_only_fields = ['id', 'email', 'username']
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'telefono', 'ruta_fotografia', 'ruta_fotografia_url')
+        read_only_fields = ('id', 'email', 'username')
+        extra_kwargs = {
+            'ruta_fotografia': {'required': False, 'allow_null': True}
+        }
 
-    def validate(self, data):
-        """
-        Valida si las contraseñas nuevas coinciden.
-        """
-        password = data.get('password', None)
-        password_confirm = data.get('password_confirm', None)
-
-        if password and password_confirm and password != password_confirm:
-            raise serializers.ValidationError({"password_confirm": "Las nuevas contraseñas no coinciden."})
-
-        # No es necesario guardar password_confirm
-        if 'password_confirm' in data:
-            data.pop('password_confirm')
-
-        return data
-
-    def update(self, instance, validated_data):
-        """
-        Actualiza la instancia del usuario.
-        """
-        # Si se proporciona una nueva contraseña, la hasheamos y la actualizamos.
-        password = validated_data.pop('password', None)
-        if password:
-            instance.set_password(password) # set_password se encarga del hashing
-
-        # Llama al método update del padre para actualizar el resto de los campos
-        return super().update(instance, validated_data)
+    def get_ruta_fotografia_url(self, obj):
+        request = self.context.get('request')
+        if obj.ruta_fotografia and hasattr(obj.ruta_fotografia, 'url'):
+            return request.build_absolute_uri(obj.ruta_fotografia.url) if request else obj.ruta_fotografia.url
+        return None
 
 # Serializer para las noticias
 class NoticiaSerializer(serializers.ModelSerializer):

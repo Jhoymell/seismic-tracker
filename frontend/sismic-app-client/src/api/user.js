@@ -7,18 +7,7 @@ export const getProfile = async () => {
 };
 
 // Actualiza los datos del perfil. Usa FormData para la foto.
-export const updateProfile = async (profileData) => {
-  // Para enviar archivos, debemos usar FormData
-  const formData = new FormData();
-
-  // Añadimos cada campo al objeto FormData
-  // Omitimos los campos vacíos para no enviar datos innecesarios (ej: contraseña)
-  Object.keys(profileData).forEach(key => {
-    if (profileData[key]) {
-      formData.append(key, profileData[key]);
-    }
-  });
-
+export const updateProfile = async (formData) => {
   const response = await apiClient.patch('/perfil/', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',

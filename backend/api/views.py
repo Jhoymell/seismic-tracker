@@ -25,12 +25,30 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PasswordChangeSerializer
+import os # Importa el modelo de usuario personalizado
 
 
 
 Usuario = get_user_model()
 
 class RegistroUsuarioView(generics.CreateAPIView):
+    """
+    Vista para registrar nuevos usuarios en el sistema.
+    
+    Endpoints:
+    - POST /api/registro/: Crea un nuevo usuario
+    
+    Características:
+    - No requiere autenticación
+    - Accesible para cualquier usuario (AllowAny)
+    - Valida y hashea la contraseña automáticamente
+    - Asigna por defecto el tipo de usuario 'VISITANTE'
+    - Valida formato de teléfono y unicidad de email
+    
+    Returns:
+        201: Usuario creado exitosamente
+        400: Error de validación en los datos proporcionados
+    """
     queryset = Usuario.objects.all()
     serializer_class = RegistroUsuarioSerializer
     authentication_classes = [] # No se requiere ninguna autenticación
@@ -53,25 +71,73 @@ class RegistroUsuarioView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class MyTokenObtainPairView(TokenObtainPairView):
+    """
+    Vista personalizada para la obtención de tokens JWT.
+    
+    Endpoints:
+    - POST /api/token/: Obtiene tokens de acceso y refresco
+    
+    Características:
+    - Extiende TokenObtainPairView de SimpleJWT
+    - No requiere autenticación previa
+    - Incluye datos adicionales en el token (claims):
+        * username
+        * email
+        * tipo_usuario
+        * first_name
+        * ruta_fotografia
+    - Actualiza automáticamente last_login del usuario
+    
+    Returns:
+        200: Tokens JWT (access y refresh) + datos personalizados
+        401: Credenciales inválidas
+    """
     serializer_class = MyTokenObtainPairSerializer
     authentication_classes = []
     permission_classes = [AllowAny]
 
 class PerfilUsuarioView(generics.RetrieveUpdateAPIView):
     """
-    Vista para que los usuarios vean y actualicen su perfil.
-    - GET: Devuelve los datos del usuario autenticado.
-    - PUT/PATCH: Actualiza los datos del usuario autenticado.
+    Vista para gestionar el perfil del usuario autenticado.
+    
+    Endpoints:
+    - GET /api/perfil/: Obtiene los datos del perfil del usuario actual
+    - PATCH /api/perfil/: Actualiza parcialmente el perfil
+    - PUT /api/perfil/: Actualiza completamente el perfil
+    
+    Características:
+    - Requiere autenticación JWT
+    - Manejo automático de archivos de imagen (foto de perfil)
+    - Limpieza automática de fotos antiguas al actualizar
+    - Validación de campos (teléfono, email, etc.)
+    
+    Campos editables:
+    - first_name
+    - last_name
+    - telefono
+    - ruta_fotografia
+    
+    Returns:
+        200: Perfil obtenido/actualizado exitosamente
+        401: Usuario no autenticado
+        400: Datos de actualización inválidos
     """
     serializer_class = PerfilUsuarioSerializer
-    permission_classes = [IsAuthenticated] # ¡Muy importante! Solo usuarios autenticados.
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        """
-        Sobrescribimos este método para que siempre devuelva el usuario
-        que está haciendo la petición (request.user).
-        """
         return self.request.user
+
+    def partial_update(self, request, *args, **kwargs):
+     instance = self.get_object()
+     old_photo = instance.ruta_fotografia
+     response = super().partial_update(request, *args, **kwargs)
+     # instance se ha actualizado, recarga desde la BD
+     instance.refresh_from_db()
+     if old_photo and instance.ruta_fotografia != old_photo:
+        if hasattr(old_photo, 'path') and os.path.exists(old_photo.path):
+            os.remove(old_photo.path)
+     return response
     
 class NoticiaViewSet(viewsets.ModelViewSet):
     """
@@ -104,8 +170,32 @@ class NoticiaViewSet(viewsets.ModelViewSet):
 
 class EventoSismicoViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet de solo lectura para los eventos sísmicos.
-    Permite filtrar por magnitud, fecha y buscar por ubicación.
+    ViewSet para consulta de eventos sísmicos (solo lectura).
+    
+    Endpoints:
+    - GET /api/sismos/: Lista todos los eventos sísmicos
+    - GET /api/sismos/{id}/: Obtiene un evento sísmico específico
+    
+    Características:
+    - Solo lectura (no permite modificaciones)
+    - Ordenamiento por fecha y hora (más recientes primero)
+    - Filtrado avanzado y búsqueda
+    - Requiere autenticación
+    
+    Filtros disponibles:
+    - Magnitud (exact, gte, lte)
+    - Fecha (exact, gte, lte)
+    - Ubicación (búsqueda por texto)
+    
+    Campos de ordenamiento:
+    - fecha_hora_evento
+    - magnitud
+    - profundidad
+    
+    Returns:
+        200: Consulta exitosa
+        401: Usuario no autenticado
+        404: Evento no encontrado
     """
     queryset = EventoSismico.objects.all().order_by('-fecha_hora_evento')
     serializer_class = EventoSismicoSerializer
@@ -133,10 +223,31 @@ class UserManagementViewSet(mixins.ListModelMixin,
                             mixins.DestroyModelMixin,
                             viewsets.GenericViewSet):
     """
-    ViewSet para que los administradores vean y eliminen usuarios visitantes.
-    - `list`: Devuelve una lista de todos los usuarios visitantes.
-    - `retrieve`: Devuelve un solo usuario.
-    - `destroy`: Elimina un usuario visitante.
+    ViewSet para la gestión de usuarios por parte de administradores.
+    
+    Endpoints:
+    - GET /api/admin/users/: Lista todos los usuarios visitantes
+    - GET /api/admin/users/{id}/: Obtiene detalles de un usuario específico
+    - DELETE /api/admin/users/{id}/: Elimina un usuario visitante
+    
+    Características:
+    - Acceso exclusivo para administradores
+    - Solo gestiona usuarios de tipo 'VISITANTE'
+    - Permite listar, ver detalles y eliminar usuarios
+    - No permite crear ni modificar usuarios
+    
+    Datos mostrados:
+    - ID
+    - Email
+    - Nombre completo
+    - Fecha de registro
+    - Último acceso
+    
+    Returns:
+        200: Operación exitosa
+        401: Usuario no autenticado
+        403: Usuario no es administrador
+        404: Usuario no encontrado
     """
     serializer_class = UserManagementSerializer
     permission_classes = [IsAdminUser]
@@ -149,7 +260,31 @@ class UserManagementViewSet(mixins.ListModelMixin,
     
 class ChangePasswordView(APIView):
     """
-    Vista para que un usuario autenticado cambie su propia contraseña.
+    Vista para que usuarios autenticados cambien su contraseña.
+    
+    Endpoint:
+    - POST /api/perfil/cambiar-password/
+    
+    Características:
+    - Requiere autenticación
+    - Valida la contraseña actual antes de permitir el cambio
+    - Verifica que las nuevas contraseñas coincidan
+    - Hashea automáticamente la nueva contraseña
+    
+    Datos requeridos:
+    - old_password: Contraseña actual
+    - new_password1: Nueva contraseña
+    - new_password2: Confirmación de la nueva contraseña
+    
+    Validaciones:
+    - La contraseña actual debe ser correcta
+    - Las nuevas contraseñas deben coincidir
+    - La nueva contraseña debe cumplir los requisitos de seguridad
+    
+    Returns:
+        200: Contraseña cambiada exitosamente
+        400: Error de validación
+        401: Usuario no autenticado
     """
     permission_classes = [IsAuthenticated]
 

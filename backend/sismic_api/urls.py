@@ -17,6 +17,7 @@ urlpatterns = [
     # Apuntamos a nuestra vista personalizada para la obtención de tokens
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'), 
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
 
 if settings.DEBUG:
