@@ -16,13 +16,12 @@ const useAuthStore = create(
       // Acción para alternar la visibilidad del panel de noticias
       toggleNewsPanel: () =>
         set((state) => ({ isNewsPanelVisible: !state.isNewsPanelVisible })),
-      // Acción para abrir el sidebar
-      toggleSidebar: () =>
-        set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-
+      // Acción para iniciar sesión
       // Acción para iniciar sesión
       login: (tokens) => {
         const decodedToken = jwtDecode(tokens.access);
+        // Si el token tiene ruta_fotografia_url, úsala; si no, usa ruta_fotografia
+        const fotoUrl = decodedToken.ruta_fotografia_url || decodedToken.ruta_fotografia || null;
         set({
           accessToken: tokens.access,
           refreshToken: tokens.refresh,
@@ -33,7 +32,7 @@ const useAuthStore = create(
             tipo_usuario: decodedToken.tipo_usuario,
             username: decodedToken.username, // Asegúrate de que el token contiene este campo
             first_name: decodedToken.first_name, // Añadido para mostrar el nombre en el header
-            ruta_fotografia: decodedToken.ruta_fotografia, // Añadido para la foto de perfil
+            ruta_fotografia: fotoUrl, // Añadido para la foto de perfil
           },
           isAuthenticated: true,
         });
@@ -55,10 +54,13 @@ const useAuthStore = create(
         set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
       // Acción para actualizar el perfil del usuario en el store
-      updateUserProfile: (profileData) =>
+      updateUserProfile: (profileData) => {
+        // Siempre guarda la URL absoluta en ruta_fotografia
+        const fotoUrl = profileData.ruta_fotografia_url || profileData.ruta_fotografia || null;
         set((state) => ({
-          user: { ...state.user, ...profileData },
-        })),
+          user: { ...state.user, ...profileData, ruta_fotografia: fotoUrl },
+        }));
+      },
     }),
     {
       name: "auth-storage",

@@ -30,6 +30,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from './store/authStore';
 import useInactivityTimeout from './hooks/useInactivityTimeout';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 
 
@@ -55,6 +57,8 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegisterPage />} />
+          <Route path="/olvide-mi-password" element={<ForgotPasswordPage />} />
+          <Route path="/restablecer-password" element={<ResetPasswordPage />} />
 
           {/* Rutas Protegidas: Solo para usuarios autenticados. */}
           <Route element={<ProtectedRoute />}>

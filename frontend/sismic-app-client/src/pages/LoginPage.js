@@ -29,6 +29,8 @@ import { jwtDecode } from "jwt-decode"; // Decodificar JWT
 import { loginUser } from "../api/auth"; // Lógica de login API
 import useAuthStore from "../store/authStore"; // Estado global de autenticación
 
+
+
 // Esquema de validación para el formulario de login
 const schema = yup.object().shape({
   email: yup
@@ -184,6 +186,11 @@ const LoginPage = () => {
                 style={{ color: "#2196f3", textDecoration: "none" }}
               >
                 Regístrate aquí
+              </Link>
+            </Typography>
+            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+              <Link to="/olvide-mi-password" style={{ color: '#1976d2', textDecoration: "none" }}>
+                ¿Olvidaste tu contraseña?
               </Link>
             </Typography>
           </Box>

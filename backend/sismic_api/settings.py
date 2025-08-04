@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',  # Para autenticación con tokens
     'django_filters',  # Para filtrado en las vistas de la API
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
@@ -155,3 +156,5 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # El origen de tu aplicación React en desarrollo
 ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
