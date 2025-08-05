@@ -1,0 +1,9 @@
+.map-page-container {
+  width: 100%;
+  height: 100%; /* Asegúrate de que el contenedor de la página ocupe espacio */
+}
+
+.map-container {
+  width: 100%;
+  height: calc(100vh - 120px); /* Ajusta la altura para que quepa en la vista, restando header/footer */
+}

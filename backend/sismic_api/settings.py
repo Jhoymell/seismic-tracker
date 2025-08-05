@@ -37,14 +37,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',  # Para manejar CORS (Cross-Origin Resource Sharing)
     'api.apps.ApiConfig',  # Aplicación personalizada para la API
     'rest_framework',
     'rest_framework_simplejwt',  # Para autenticación con tokens
+    'django_filters',  # Para filtrado en las vistas de la API
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Middleware para manejar CORS
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -147,3 +151,10 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+# Configuración de CORS
+# Orígenes que tienen permitido hacer peticiones a nuestra API
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000", # El origen de tu aplicación React en desarrollo
+]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
