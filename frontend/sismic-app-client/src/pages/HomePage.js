@@ -9,6 +9,9 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 
+// Importamos nuestro nuevo componente
+import MapPreview from '../components/home/MapPreview';
+
 
 const HomePage = () => {
   const { isAuthenticated } = useAuthStore();
@@ -201,9 +204,9 @@ const HomePage = () => {
       </Box>
 
       {/* SECCIÓN DE CARACTERÍSTICAS CON HOVER EFFECTS */}
-      <Box id="features-section" sx={{ py: 8, backgroundColor: 'background.default' }}>
+      <Box id="features-section" sx={{ py: 8, background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)' }}>
         <Container maxWidth="lg">
-          <Typography variant="h4" component="h2" fontWeight="bold" textAlign="center" gutterBottom sx={{
+          <Typography variant="h4" component="h2" fontWeight="bold" gutterBottom sx={{
             background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -211,7 +214,9 @@ const HomePage = () => {
             fontSize: { xs: '2rem', md: '2.5rem' },
             letterSpacing: '-1px',
             mb: 2,
-            filter: 'drop-shadow(0 2px 16px #00e5ff33)'
+            filter: 'drop-shadow(0 2px 16px #00e5ff33)',
+            textAlign: 'center',
+            display: 'block',
           }}>
             Una Herramienta Completa
           </Typography>
@@ -255,6 +260,71 @@ const HomePage = () => {
               </Grid>
             ))}
           </Grid>
+        </Container>
+      </Box>
+      {/* --- NUEVA SECCIÓN DE VISTA PREVIA DEL MAPA --- */}
+      <Box sx={{ py: 10, background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)' }}>
+        <Container maxWidth="lg">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.7 }}
+          >
+            <Box sx={{
+              display: 'inline-block',
+              background: 'rgba(10,18,30,0.95)',
+              borderRadius: '1.5rem',
+              px: { xs: 2, md: 4 },
+              py: { xs: 1, md: 2 },
+              boxShadow: '0 4px 32px 0 #0008',
+              mb: 3,
+              mx: 'auto',
+              maxWidth: '100%',
+            }}>
+              <Typography variant="h4" component="h2" fontWeight="bold" gutterBottom sx={{
+                background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontSize: { xs: '2rem', md: '2.5rem' },
+                letterSpacing: '-1px',
+                filter: 'drop-shadow(0 2px 16px #00e5ff33)',
+                m: 0,
+                textAlign: 'center',
+                display: 'block',
+              }}>
+                Explora el Mapa en Tiempo Real
+              </Typography>
+            </Box>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.9, delay: 0.2 }}
+          >
+            <Typography variant="body1" textAlign="center" sx={{ mb: 6, fontSize: { xs: '1rem', md: '1.2rem' }, color: '#00bcd4', fontWeight: 600, letterSpacing: '0.5px' }}>
+              Una vista previa de los últimos eventos sísmicos registrados a nivel mundial.
+            </Typography>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+          >
+            <Paper elevation={3} sx={{
+              borderRadius: '1.5rem',
+              p: { xs: 1, md: 3 },
+              background: 'linear-gradient(135deg, #10131a 80%, #0a121e 100%)',
+              boxShadow: '0 2px 16px 0 #00bcd422',
+              maxWidth: 900,
+              mx: 'auto',
+            }}>
+              <MapPreview />
+            </Paper>
+          </motion.div>
         </Container>
       </Box>
     </motion.div>
