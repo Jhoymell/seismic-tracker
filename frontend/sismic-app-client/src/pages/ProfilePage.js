@@ -1,3 +1,4 @@
+import PageTransition from '../components/utils/PageTransition';
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -32,7 +33,7 @@ const profileSchema = yup.object().shape({
     .min(8, "El teléfono parece demasiado corto")
     .required("El teléfono es obligatorio"),
 });
-const MotionBox = motion(Box);
+// const MotionBox = motion(Box); // Eliminado porque no se usa
 
 const ProfilePage = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -152,7 +153,7 @@ const ProfilePage = () => {
   }, [previewImage]);
 
   return (
-    <>
+    <PageTransition>
       <Container component="main" maxWidth="md">
         <Toaster position="top-center" />
         {isLoading ? (
@@ -395,7 +396,7 @@ const ProfilePage = () => {
         open={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
       />
-    </>
+    </PageTransition>
   );
 };
 

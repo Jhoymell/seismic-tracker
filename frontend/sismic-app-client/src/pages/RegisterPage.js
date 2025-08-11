@@ -1,9 +1,10 @@
+import PageTransition from '../components/utils/PageTransition';
 import React, { useState, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form'; // FormProvider es clave para formularios por pasos
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Toaster } from 'react-hot-toast';
+import { AnimatePresence } from 'framer-motion';
 import zxcvbn from 'zxcvbn';
 
 // Importaciones de MUI
@@ -23,6 +24,25 @@ const RegisterPage = () => {
   // --- CAMBIO 1: Añadimos estado para controlar el paso actual ---
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
+
+  // onSubmit debe estar definido antes del return
+  const onSubmit = async (data) => {
+    const loadingToast = window.toast.loading('Registrando tu cuenta...');
+    const submissionData = { ...data };
+    if (submissionData.fecha_nacimiento instanceof Date) {
+      const year = submissionData.fecha_nacimiento.getFullYear();
+      const month = String(submissionData.fecha_nacimiento.getMonth() + 1).padStart(2, '0');
+      const day = String(submissionData.fecha_nacimiento.getDate()).padStart(2, '0');
+      submissionData.fecha_nacimiento = `${year}-${month}-${day}`;
+    }
+    try {
+      const response = await registerUser(submissionData);
+      window.toast.success(response.message, { id: loadingToast });
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (error) {
+      window.toast.error('Hubo un error al registrar la cuenta.', { id: loadingToast });
+    }
+  };
 
   const currentValidationSchema = stepSchemas[activeStep];
   
@@ -62,8 +82,10 @@ const RegisterPage = () => {
   }, [passwordValue]);
 
   // --- CAMBIO 3: Funciones para navegar entre pasos ---
+
+
   const handleNext = async () => {
-    const isStepValid = await methods.trigger(); // Valida solo el paso actual
+    const isStepValid = await methods.trigger();
     if (isStepValid) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     }
@@ -73,43 +95,28 @@ const RegisterPage = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const onSubmit = async (data) => {
-    const loadingToast = toast.loading('Registrando tu cuenta...');
-    const submissionData = { ...data };
-    if (submissionData.fecha_nacimiento instanceof Date) {
-        const year = submissionData.fecha_nacimiento.getFullYear();
-        const month = String(submissionData.fecha_nacimiento.getMonth() + 1).padStart(2, '0');
-        const day = String(submissionData.fecha_nacimiento.getDate()).padStart(2, '0');
-        submissionData.fecha_nacimiento = `${year}-${month}-${day}`;
-    }
-    try {
-        const response = await registerUser(submissionData);
-        toast.success(response.message, { id: loadingToast });
-        setTimeout(() => navigate('/login'), 2000);
-    } catch (error) {
-        toast.error('Hubo un error al registrar la cuenta.', { id: loadingToast });
-    }
-  };
 
-  return (
-    <Container component="main" maxWidth="sm">
-      <Toaster position="top-center" />
-      <Box
-        sx={{
-          marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center',
-          backgroundColor: 'background.paper', padding: { xs: 2, sm: 4 }, borderRadius: '1rem', boxShadow: 3,
-        }}
-      >
-        <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-          Crear una Cuenta
-        </Typography>
-        
-        {/* --- CAMBIO 4: El JSX ahora incluye el Stepper y renderiza los pasos condicionalmente --- */}
-        <Stepper activeStep={activeStep} sx={{ mb: 4, width: '100%' }}>
-          {steps.map((label) => (
-            <Step key={label}><StepLabel>{label}</StepLabel></Step>
-          ))}
-        </Stepper>
+
+
+
+    return (
+      <PageTransition>
+        <Container component="main" maxWidth="sm">
+          <Toaster position="top-center" />
+          <Box
+            sx={{
+              marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center',
+              backgroundColor: 'background.paper', padding: { xs: 2, sm: 4 }, borderRadius: '1rem', boxShadow: 3,
+            }}
+          >
+            <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+              Crear una Cuenta
+            </Typography>
+            <Stepper activeStep={activeStep} sx={{ mb: 4, width: '100%' }}>
+              {steps.map((label) => (
+                <Step key={label}><StepLabel>{label}</StepLabel></Step>
+              ))}
+            </Stepper>
 
         <FormProvider {...methods}>
           <form id="register-form" onSubmit={methods.handleSubmit(onSubmit)}>
@@ -148,6 +155,7 @@ const RegisterPage = () => {
         </Box>
       </Box>
     </Container>
+  </PageTransition>
   );
 };
 
