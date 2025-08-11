@@ -1,15 +1,14 @@
+
+import PageTransition from '../components/utils/PageTransition';
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import toast, { Toaster } from "react-hot-toast";
-import { useDebounce } from "use-debounce"; // Instalaremos esta librería útil
-import { motion } from "framer-motion";
-import { Box, Paper } from "@mui/material"; // Usaremos Box y Paper como contenedores
-
+import { useDebounce } from "use-debounce";
+import { Paper } from "@mui/material";
 import { getSismos } from "../api/sismos";
-import MapFilters from "../components/map/MapFilters"; // Importar el componente de filtros
+import MapFilters from "../components/map/MapFilters";
 import "./MapPage.css";
-import dayjs from "dayjs"; // Importamos dayjs para manejar las fechas
-const MotionBox = motion(Box);
+import dayjs from "dayjs";
 
 // Usamos Box de MUI para mantener consistencia con el estilo
 const MapPage = () => {
@@ -85,11 +84,7 @@ const MapPage = () => {
   }, []);
 
   return (
-    <MotionBox
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <PageTransition>
       <Toaster position="top-center" />
       <MapFilters filters={filters} setFilters={setFilters} />
       <Paper
@@ -117,8 +112,7 @@ const MapPage = () => {
                     {sismo.lugar_descripcion || "Ubicación no disponible"}
                   </h3>
                   <p>
-                    <strong>Latitud:</strong>
-                    {sismo.latitud}
+                    <strong>Latitud:</strong> {sismo.latitud}
                   </p>
                   <p>
                     <strong>Longitud:</strong> {sismo.longitud}
@@ -146,7 +140,7 @@ const MapPage = () => {
           ))}
         </MapContainer>
       </Paper>
-    </MotionBox>
+    </PageTransition>
   );
 };
 
