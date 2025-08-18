@@ -1,14 +1,14 @@
-
 import PageTransition from '../components/utils/PageTransition';
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import toast, { Toaster } from "react-hot-toast";
 import { useDebounce } from "use-debounce";
-import { Paper } from "@mui/material";
+import { Paper, Box, Typography } from "@mui/material";
 import { getSismos } from "../api/sismos";
 import MapFilters from "../components/map/MapFilters";
 import "./MapPage.css";
 import dayjs from "dayjs";
+import { sismoIcon } from '../components/map/mapIcons';
 
 // Usamos Box de MUI para mantener consistencia con el estilo
 const MapPage = () => {
@@ -101,43 +101,35 @@ const MapPage = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {sismos.map((sismo) => (
-            <Marker
-              key={sismo.id_evento_usgs}
-              position={[sismo.latitud, sismo.longitud]}
-            >
-              <Popup>
-                <div>
-                  <h3>
-                    {sismo.lugar_descripcion || "Ubicación no disponible"}
-                  </h3>
-                  <p>
-                    <strong>Latitud:</strong> {sismo.latitud}
-                  </p>
-                  <p>
-                    <strong>Longitud:</strong> {sismo.longitud}
-                  </p>
-                  <p>
-                    <strong>Magnitud:</strong> {sismo.magnitud} Mw
-                  </p>
-                  <p>
-                    <strong>Profundidad:</strong> {sismo.profundidad} km
-                  </p>
-                  <p>
-                    <strong>Fecha:</strong>{" "}
-                    {new Date(sismo.fecha_hora_evento).toLocaleString()}
-                  </p>
-                  <a
-                    href={sismo.url_usgs}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Más detalles en USGS
-                  </a>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          { sismos.map((sismo) => (
+  <Marker
+    key={sismo.id_evento_usgs}
+    position={[sismo.latitud, sismo.longitud]}
+    icon={sismoIcon} // usamos el ícono personalizado
+  >
+    <Popup>
+      <Box sx={{ minWidth: 200 }}>
+        <Typography variant="subtitle2" component="h3" gutterBottom>
+          {sismo.lugar_descripcion || "Ubicación no disponible"}
+        </Typography>
+        <Typography variant="body2">
+          <strong>Magnitud:</strong> {sismo.magnitud} Mw
+        </Typography>
+        <Typography variant="body2">
+          <strong>Profundidad:</strong> {sismo.profundidad} km
+        </Typography>
+        <Typography variant="body2">
+          <strong>Fecha:</strong> {new Date(sismo.fecha_hora_evento).toLocaleString()}
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          <a href={sismo.url_usgs} target="_blank" rel="noopener noreferrer">
+            Ver más detalles en USGS
+          </a>
+        </Typography>
+      </Box>
+    </Popup>
+  </Marker>
+)) }
         </MapContainer>
       </Paper>
     </PageTransition>
