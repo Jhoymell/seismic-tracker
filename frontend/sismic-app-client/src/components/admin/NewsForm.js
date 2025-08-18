@@ -22,8 +22,31 @@ const NewsForm = ({ initialData, onSubmit, onClose }) => {
   });
 
   return (
-    <Dialog open={true} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>{initialData ? 'Editar' : 'Crear'} Noticia</DialogTitle>
+    <Dialog
+      open={true}
+      onClose={onClose}
+      fullWidth
+      maxWidth="md"
+      PaperProps={{
+        sx: {
+          borderRadius: '1rem',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          fontWeight: 800,
+          background:
+            'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          letterSpacing: '-0.3px',
+        }}
+      >
+        {initialData ? 'Editar' : 'Crear'} Noticia
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Controller
@@ -44,7 +67,22 @@ const NewsForm = ({ initialData, onSubmit, onClose }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancelar</Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isSubmitting}
+            sx={{
+              borderRadius: '12px',
+              fontWeight: 700,
+              px: 3,
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+              boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+              '&:hover': {
+                background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+              },
+            }}
+          >
             {isSubmitting ? <CircularProgress size={24} /> : 'Guardar'}
           </Button>
         </DialogActions>
