@@ -162,7 +162,7 @@ const LoginPage = () => {
         open={showInactivityModal}
         onClose={handleCloseModal}
         TransitionComponent={Fade}
-        transitionDuration={200}
+        transitionDuration={700} // antes 200, ahora 0.7s consistente
         PaperProps={{ sx: { borderRadius: '1rem', padding: '1rem' } }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

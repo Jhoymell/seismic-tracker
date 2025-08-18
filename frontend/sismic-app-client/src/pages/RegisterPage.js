@@ -105,11 +105,30 @@ const RegisterPage = () => {
           <Toaster position="top-center" />
           <Box
             sx={{
-              marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center',
-              backgroundColor: 'background.paper', padding: { xs: 2, sm: 4 }, borderRadius: '1rem', boxShadow: 3,
+              marginTop: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              backgroundColor: 'background.paper',
+              padding: { xs: 2, sm: 4 },
+              borderRadius: '1rem',
+              boxShadow: '0 2px 16px 0 #00bcd422', // sombra consistente
             }}
           >
-            <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+            <Typography
+              component="h1"
+              variant="h5"
+              sx={{
+                mb: 3,
+                background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontWeight: 800,
+                letterSpacing: '-0.3px',
+                filter: 'drop-shadow(0 2px 12px #00e5ff33)',
+              }}
+            >
               Crear una Cuenta
             </Typography>
             <Stepper activeStep={activeStep} sx={{ mb: 4, width: '100%' }}>

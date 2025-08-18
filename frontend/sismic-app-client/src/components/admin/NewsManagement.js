@@ -20,10 +20,16 @@ import {
   Typography,
   CircularProgress,
   Button,
+  Box, // <-- agregado
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { motion } from 'framer-motion';
+
+// Creamos versiones animadas de los componentes de tabla
+const MotionTableBody = motion(TableBody);
+const MotionTableRow = motion(TableRow);
 
 const NewsManagement = () => {
   const [news, setNews] = useState([]);
@@ -86,20 +92,91 @@ const NewsManagement = () => {
     }
   };
 
-  if (loading) return <CircularProgress />;
+  // Variantes de animación (contenedor y filas)
+  const listContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 },
+    },
+  };
+
+  const listItemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
+
+  if (loading) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <CircularProgress />
+    </Box>
+  );
 
   return (
-    <div>
+    <Box
+      sx={{
+        p: 2,
+        borderRadius: '1rem',
+        background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
+        boxShadow: '0 2px 16px 0 #00bcd422',
+      }}
+    >
+      <Typography
+        variant="h5"
+        sx={{
+          mb: 2,
+          background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          fontWeight: 800,
+          letterSpacing: '-0.3px',
+          filter: 'drop-shadow(0 2px 12px #00e5ff33)',
+        }}
+      >
+        Gestión de Noticias
+      </Typography>
+
       <Button
         variant="contained"
         startIcon={<AddCircleIcon />}
         onClick={handleCreate}
-        sx={{ mb: 2 }}
+        sx={{
+          mb: 2,
+          borderRadius: '12px',
+          fontWeight: 700,
+          boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+          background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+          '&:hover': {
+            background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+            boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+          },
+        }}
       >
         Crear Nueva Noticia
       </Button>
-      <TableContainer component={Paper}>
-        <Table>
+
+      <TableContainer
+        component={Paper}
+        sx={{
+          background: 'rgba(10,18,30,0.65)',
+          borderRadius: '1rem',
+          boxShadow: '0 2px 16px 0 #00bcd422',
+        }}
+      >
+        <Table
+          sx={{
+            '& th': {
+              color: '#e3f7fa',
+              fontWeight: 700,
+              borderBottom: '1px solid rgba(0,188,212,0.25)',
+            },
+            '& td': {
+              color: '#b3e5fc',
+              borderBottom: '1px solid #0e2a36',
+            },
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Título</TableCell>
@@ -107,9 +184,27 @@ const NewsManagement = () => {
               <TableCell align="right">Acciones</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+
+          {/* Aplicamos variantes al cuerpo de la tabla */}
+          <MotionTableBody
+            variants={listContainerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {news.map((item) => (
-              <TableRow key={item.id}>
+              // Cada fila con su propia animación
+              <MotionTableRow
+                key={item.id}
+                variants={listItemVariants}
+                whileHover={{
+                  scale: 1.01,
+                  y: -2,
+                  boxShadow: '0 10px 26px rgba(0,188,212,0.18)',
+                  backgroundColor: 'rgba(0,188,212,0.06)',
+                }}
+                transition={{ duration: 0.25 }}
+                sx={{ borderRadius: '10px' }}
+              >
                 <TableCell>{item.titulo}</TableCell>
                 <TableCell>
                   {new Date(item.fecha_publicacion).toLocaleString()}
@@ -118,19 +213,27 @@ const NewsManagement = () => {
                   <IconButton
                     onClick={() => handleEdit(item)}
                     color="secondary"
+                    sx={{
+                      transition: 'transform .15s ease',
+                      '&:hover': { transform: 'scale(1.07)' },
+                    }}
                   >
                     <EditIcon />
                   </IconButton>
                   <IconButton
                     onClick={() => handleDelete(item.id)}
                     color="error"
+                    sx={{
+                      transition: 'transform .15s ease',
+                      '&:hover': { transform: 'scale(1.07)' },
+                    }}
                   >
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
-              </TableRow>
+              </MotionTableRow>
             ))}
-          </TableBody>
+          </MotionTableBody>
         </Table>
       </TableContainer>
 
@@ -141,7 +244,7 @@ const NewsManagement = () => {
           onClose={() => setIsModalOpen(false)}
         />
       )}
-    </div>
+    </Box>
   );
 };
 
