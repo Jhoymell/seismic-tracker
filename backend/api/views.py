@@ -1,3 +1,17 @@
+# --- Endpoint público para los últimos 10 sismos ---
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from .models import EventoSismico
+from .serializers import EventoSismicoSerializer
+
+class PublicSismosView(generics.ListAPIView):
+    """
+    Una vista pública que devuelve los 10 sismos más recientes.
+    No requiere autenticación.
+    """
+    queryset = EventoSismico.objects.order_by('-fecha_hora_evento')[:10]
+    serializer_class = EventoSismicoSerializer
+    permission_classes = [AllowAny] # <-- Permite el acceso a cualquiera
 from rest_framework import generics, status
 from rest_framework.response import Response
 from .serializers import RegistroUsuarioSerializer
@@ -298,3 +312,15 @@ class ChangePasswordView(APIView):
             return Response({"detail": "Contraseña cambiada con éxito."}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    
+
+class PublicSismosView(generics.ListAPIView):
+    """
+    Vista pública para listar eventos sísmicos.
+    No Requiere AUT
+    """
+    queryset = EventoSismico.objects.order_by('-fecha_hora_evento')[:10]
+    serializer_class = EventoSismicoSerializer
+    permission_classes = [AllowAny] # <-- Permite el acceso a cualquiera

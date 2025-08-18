@@ -29,7 +29,7 @@ const Footer = () => {
           {'© '}
           {new Date().getFullYear()}
           {' Proyecto Sismológico | Desarrollado por '}
-          <span style={{ color: '#00bcd4', fontWeight: 700 }}>Jhoymell Lizano</span>.
+          <span style={{ color: '#00bcd4', fontWeight: 700 }}>Jhoymell Lizano y Fabian Marin</span>.
         </Typography>
       </Container>
     </Box>
