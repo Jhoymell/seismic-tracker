@@ -8,13 +8,20 @@ import { AnimatePresence } from 'framer-motion';
 import zxcvbn from 'zxcvbn';
 
 // Importaciones de MUI
-import { Container, Box, Typography, Stepper, Step, StepLabel, Button, CircularProgress } from '@mui/material';
+import { Box, Stepper, Step, StepLabel, Button, CircularProgress } from '@mui/material';
 
 // Importaciones de nuestros componentes y lógica
 import { registerUser } from '../api/auth';
 import AccountStep from '../components/register/AccountStep';
 import PersonalStep from '../components/register/PersonalStep';
 import { accountSchema, personalSchema } from '../components/register/validationSchemas';
+import { 
+  SectionBackground, 
+  StyledCard, 
+  GradientTitle,
+  GradientSubtitle,
+  PageContainer
+} from '../components/shared/StyledComponents';
 
 // Definimos nuestros pasos y sus esquemas de validación correspondientes
 const steps = ['Datos de Cuenta', 'Información Personal'];
@@ -101,81 +108,123 @@ const RegisterPage = () => {
 
     return (
       <PageTransition>
-        <Container component="main" maxWidth="sm">
+        <SectionBackground>
           <Toaster position="top-center" />
-          <Box
-            sx={{
-              marginTop: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              backgroundColor: 'background.paper',
-              padding: { xs: 2, sm: 4 },
-              borderRadius: '1rem',
-              boxShadow: '0 2px 16px 0 #00bcd422', // sombra consistente
-            }}
-          >
-            <Typography
-              component="h1"
-              variant="h5"
-              sx={{
-                mb: 3,
-                background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontWeight: 800,
-                letterSpacing: '-0.3px',
-                filter: 'drop-shadow(0 2px 12px #00e5ff33)',
-              }}
-            >
-              Crear una Cuenta
-            </Typography>
-            <Stepper activeStep={activeStep} sx={{ mb: 4, width: '100%' }}>
-              {steps.map((label) => (
-                <Step key={label}><StepLabel>{label}</StepLabel></Step>
-              ))}
-            </Stepper>
+          <PageContainer maxWidth="md">
+            <StyledCard>
+              <GradientTitle variant="h4" component="h1" sx={{ textAlign: 'center', mb: 1 }}>
+                Crear una Cuenta
+              </GradientTitle>
+              <GradientSubtitle sx={{ textAlign: 'center', mb: 4, fontSize: { xs: '1rem', md: '1.2rem' } }}>
+                Únete a nuestra plataforma de monitoreo sísmico global
+              </GradientSubtitle>
+              
+              <Stepper 
+                activeStep={activeStep} 
+                sx={{ 
+                  mb: 4, 
+                  width: '100%',
+                  '& .MuiStepLabel-label': {
+                    color: 'text.primary',
+                    fontWeight: 600,
+                  },
+                  '& .MuiStepIcon-root': {
+                    color: 'rgba(33, 150, 243, 0.3)',
+                    '&.Mui-active': {
+                      color: '#2196f3',
+                    },
+                    '&.Mui-completed': {
+                      color: '#00bcd4',
+                    },
+                  },
+                }}
+              >
+                {steps.map((label) => (
+                  <Step key={label}><StepLabel>{label}</StepLabel></Step>
+                ))}
+              </Stepper>
 
-        <FormProvider {...methods}>
-          <form id="register-form" onSubmit={methods.handleSubmit(onSubmit)}>
-            <AnimatePresence mode="wait">
-              {activeStep === 0 && (
-                <AccountStep 
-                  key="step1" 
-                  passwordStrength={passwordStrength} 
-                  passwordChecks={passwordChecks} 
-                />
-              )}
-              {activeStep === 1 && <PersonalStep key="step2" />}
-            </AnimatePresence>
-          </form>
-        </FormProvider>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 4 }}>
-          <Button disabled={activeStep === 0} onClick={handleBack}>
-            Atrás
-          </Button>
-          
-          {activeStep < steps.length - 1 ? (
-            <Button variant="contained" onClick={handleNext}>
-              Siguiente
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              form="register-form"
-              variant="contained"
-              disabled={methods.formState.isSubmitting}
-            >
-              {methods.formState.isSubmitting ? <CircularProgress size={24}/> : 'Crear Cuenta'}
-            </Button>
-          )}
-        </Box>
-      </Box>
-    </Container>
-  </PageTransition>
-  );
+              <FormProvider {...methods}>
+                <form id="register-form" onSubmit={methods.handleSubmit(onSubmit)}>
+                  <AnimatePresence mode="wait">
+                    {activeStep === 0 && (
+                      <AccountStep 
+                        key="step1" 
+                        passwordStrength={passwordStrength} 
+                        passwordChecks={passwordChecks} 
+                      />
+                    )}
+                    {activeStep === 1 && <PersonalStep key="step2" />}
+                  </AnimatePresence>
+                </form>
+              </FormProvider>
+              
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 4, gap: 2 }}>
+                <Button 
+                  disabled={activeStep === 0} 
+                  onClick={handleBack}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: '12px',
+                    fontWeight: 600,
+                    px: 3,
+                    borderColor: '#2196f3',
+                    color: '#2196f3',
+                    '&:hover': {
+                      borderColor: '#00bcd4',
+                      color: '#00bcd4',
+                      background: 'rgba(33, 150, 243, 0.05)',
+                    },
+                  }}
+                >
+                  Atrás
+                </Button>
+                
+                {activeStep < steps.length - 1 ? (
+                  <Button 
+                    variant="contained" 
+                    onClick={handleNext}
+                    sx={{
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      px: 3,
+                      background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                      boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                      '&:hover': {
+                        background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                        boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                      },
+                    }}
+                  >
+                    Siguiente
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    form="register-form"
+                    variant="contained"
+                    disabled={methods.formState.isSubmitting}
+                    sx={{
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      px: 3,
+                      background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                      boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                      '&:hover': {
+                        background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                        boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                      },
+                    }}
+                  >
+                    {methods.formState.isSubmitting ? <CircularProgress size={24}/> : 'Crear Cuenta'}
+                  </Button>
+                )}
+              </Box>
+            </StyledCard>
+          </PageContainer>
+        </SectionBackground>
+      </PageTransition>
+    );
 };
 
 export default RegisterPage;
