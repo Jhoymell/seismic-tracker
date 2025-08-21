@@ -95,13 +95,26 @@ const LoginPage = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            backgroundColor: 'background.paper',
+            background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
             padding: { xs: 2, sm: 4 },
             borderRadius: '1rem',
-            boxShadow: 3,
+            boxShadow: '0 2px 16px 0 #00bcd422',
           }}
         >
-          <Typography component="h1" variant="h5">
+          <Typography 
+            component="h1" 
+            variant="h5"
+            sx={{
+              mb: 3,
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              fontWeight: 800,
+              letterSpacing: '-0.3px',
+              filter: 'drop-shadow(0 2px 12px #00e5ff33)',
+            }}
+          >
             Iniciar Sesión
           </Typography>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
@@ -134,7 +147,19 @@ const LoginPage = () => {
                 fullWidth
                 variant="contained"
                 disabled={isSubmitting}
-                sx={{ mt: 3, mb: 2, py: 1.5 }}
+                sx={{ 
+                  mt: 3, 
+                  mb: 2, 
+                  py: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
               >
                 {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Ingresar'}
               </Button>

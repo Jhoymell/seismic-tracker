@@ -85,12 +85,23 @@ const MapPage = () => {
 
   return (
     <PageTransition>
-      <Toaster position="top-center" />
-      <MapFilters filters={filters} setFilters={setFilters} />
-      <Paper
-        elevation={3}
-        sx={{ height: "calc(100vh - 220px)", width: "100%" }}
-      >
+      <Box sx={{ 
+        background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
+        borderRadius: '1rem',
+        p: 2,
+        boxShadow: '0 2px 16px 0 #00bcd422',
+      }}>
+        <Toaster position="top-center" />
+        <MapFilters filters={filters} setFilters={setFilters} />
+        <Paper
+          elevation={3}
+          sx={{ 
+            height: "calc(100vh - 220px)", 
+            width: "100%",
+            borderRadius: '1rem',
+            overflow: 'hidden',
+          }}
+        >
         {loading && <div className="loading-overlay">Cargando...</div>}
         <MapContainer
           center={[9.63, -84.08]}
@@ -132,6 +143,7 @@ const MapPage = () => {
 )) }
         </MapContainer>
       </Paper>
+      </Box>
     </PageTransition>
   );
 };
