@@ -3,12 +3,17 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import toast, { Toaster } from "react-hot-toast";
 import { useDebounce } from "use-debounce";
-import { Paper, Box, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { getSismos } from "../api/sismos";
 import MapFilters from "../components/map/MapFilters";
 import "./MapPage.css";
 import dayjs from "dayjs";
 import { sismoIcon } from '../components/map/mapIcons';
+import { 
+  SectionBackground, 
+  StyledCard, 
+  PageContainer
+} from '../components/shared/StyledComponents';
 
 // Usamos Box de MUI para mantener consistencia con el estilo
 const MapPage = () => {
@@ -85,18 +90,46 @@ const MapPage = () => {
 
   return (
     <PageTransition>
-      <Toaster position="top-center" />
-      <MapFilters filters={filters} setFilters={setFilters} />
-      <Paper
-        elevation={3}
-        sx={{ height: "calc(100vh - 220px)", width: "100%" }}
-      >
-        {loading && <div className="loading-overlay">Cargando...</div>}
-        <MapContainer
-          center={[9.63, -84.08]}
-          zoom={7}
-          style={{ height: "100%", width: "100%" }}
-        >
+      <SectionBackground sx={{ py: 0, minHeight: '100vh' }}>
+        <Toaster position="top-center" />
+        <PageContainer maxWidth="xl" sx={{ py: 2 }}>
+          <MapFilters filters={filters} setFilters={setFilters} />
+          <StyledCard 
+            elevation={3}
+            sx={{ 
+              height: "calc(100vh - 200px)", 
+              width: "100%", 
+              p: 1, 
+              borderRadius: '1.5rem',
+              overflow: 'hidden'
+            }}
+          >
+            {loading && (
+              <Box 
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(10, 18, 30, 0.8)',
+                  zIndex: 1000,
+                  color: '#2196f3',
+                  fontSize: '1.2rem',
+                  fontWeight: 600,
+                }}
+              >
+                Cargando datos sísmicos...
+              </Box>
+            )}
+            <MapContainer
+              center={[9.63, -84.08]}
+              zoom={7}
+              style={{ height: "100%", width: "100%", borderRadius: '1.5rem' }}
+            >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -122,7 +155,12 @@ const MapPage = () => {
           <strong>Fecha:</strong> {new Date(sismo.fecha_hora_evento).toLocaleString()}
         </Typography>
         <Typography variant="body2" sx={{ mt: 1 }}>
-          <a href={sismo.url_usgs} target="_blank" rel="noopener noreferrer">
+          <a 
+            href={sismo.url_usgs} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: '#2196f3', textDecoration: 'none' }}
+          >
             Ver más detalles en USGS
           </a>
         </Typography>
@@ -130,8 +168,10 @@ const MapPage = () => {
     </Popup>
   </Marker>
 )) }
-        </MapContainer>
-      </Paper>
+            </MapContainer>
+          </StyledCard>
+        </PageContainer>
+      </SectionBackground>
     </PageTransition>
   );
 };

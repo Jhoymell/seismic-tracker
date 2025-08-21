@@ -12,7 +12,6 @@ import {
   TextField,
   Box,
   Typography,
-  Container,
   CircularProgress,
   Alert,
   IconButton,
@@ -27,6 +26,12 @@ import { motion } from 'framer-motion';
 // Importación de la función de la API
 import { confirmPasswordReset } from '../api/auth';
 import PageTransition from '../components/utils/PageTransition'; // agregado
+import { 
+  SectionBackground, 
+  FormContainer, 
+  GradientTitle,
+  GradientSubtitle,
+} from '../components/shared/StyledComponents';
 
 // Esquema de validación
 const schema = yup.object().shape({
@@ -46,9 +51,6 @@ const schema = yup.object().shape({
     .required("Debe confirmar la contraseña")
     .oneOf([yup.ref("password")], "Las contraseñas no coinciden"),
 });
-
-// Componente Box animado
-const MotionBox = motion(Box);
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
@@ -115,93 +117,43 @@ const ResetPasswordPage = () => {
     }
   };
 
-  // Variantes de animación
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: "easeInOut" }, // duración consistente
-    },
-  };
-
   return (
     <PageTransition>
-      <Container component="main" maxWidth="xs">
+      <SectionBackground>
         <Toaster position="top-center" />
-        
-        <MotionBox
-          variants={formVariants}
-          initial="hidden"
-          animate="visible"
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            backgroundColor: 'background.paper',
-            padding: { xs: 2, sm: 4 },
-            borderRadius: '1rem',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-            position: 'relative',
-            overflow: 'hidden',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '4px',
-              background: 'linear-gradient(90deg, #1976d2, #64b5f6)',
-            },
-          }}
-        >
+        <FormContainer maxWidth="sm">
           <Box
             sx={{
-              width: '70px',
-              height: '70px',
+              width: '80px',
+              height: '80px',
               borderRadius: '50%',
-              backgroundColor: 'rgba(25, 118, 210, 0.1)',
+              background: 'linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(0, 188, 212, 0.2))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               mb: 3,
+              mx: 'auto',
+              border: '2px solid rgba(33, 150, 243, 0.3)',
               transform: 'rotate(-10deg)',
             }}
           >
             <LockResetIcon 
-              color="primary" 
               sx={{ 
-                fontSize: 35,
+                fontSize: 40,
+                color: '#2196f3',
                 transform: 'rotate(10deg)',
                 transition: 'transform 0.3s ease'
               }} 
             />
           </Box>
           
-          <Typography 
-            component="h1" 
-            variant="h5" 
-            sx={{ 
-              mb: 2,
-              fontWeight: 600,
-              background: 'linear-gradient(45deg, #1976d2, #64b5f6)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              color: 'transparent',
-            }}
-          >
+          <GradientTitle variant="h4" component="h1" sx={{ textAlign: 'center', mb: 1 }}>
             Restablecer Contraseña
-          </Typography>
+          </GradientTitle>
           
-          <Typography 
-            variant="body2" 
-            color="text.secondary" 
-            align="center" 
-            sx={{ mb: 3 }}
-          >
-            Crea una nueva contraseña segura para tu cuenta.
-          </Typography>
+          <GradientSubtitle sx={{ textAlign: 'center', mb: 4, fontSize: { xs: '1rem', md: '1.2rem' } }}>
+            Crea una nueva contraseña segura para tu cuenta
+          </GradientSubtitle>
 
           {errorMessage && (
             <Alert 
@@ -209,6 +161,7 @@ const ResetPasswordPage = () => {
               sx={{ 
                 width: '100%', 
                 mb: 3,
+                borderRadius: '12px',
                 '& .MuiAlert-icon': {
                   fontSize: '24px'
                 }
@@ -307,6 +260,9 @@ const ResetPasswordPage = () => {
               error={!!errors.token}
               helperText={errors.token?.message}
               sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
                 '& label.Mui-focused': {
                   color: 'primary.main'
                 }
@@ -350,6 +306,9 @@ const ResetPasswordPage = () => {
                 }
               }}
               sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
                 '& label.Mui-focused': {
                   color: 'primary.main'
                 }
@@ -378,6 +337,11 @@ const ResetPasswordPage = () => {
                   </InputAdornment>
                 ),
               }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
             />
 
             <motion.div 
@@ -388,7 +352,19 @@ const ResetPasswordPage = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, py: 1.5 }}
+                sx={{ 
+                  mt: 3, 
+                  mb: 2, 
+                  py: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
                 disabled={
                   isSubmitting || 
                   !!errorMessage || 
@@ -418,14 +394,14 @@ const ResetPasswordPage = () => {
             <Typography variant="body2" align="center" sx={{ mt: 2 }}>
               <Link
                 to="/login"
-                style={{ color: '#1976d2', textDecoration: 'none' }}
+                style={{ color: '#2196f3', textDecoration: 'none' }}
               >
                 Volver al inicio de sesión
               </Link>
             </Typography>
           </Box>
-        </MotionBox>
-      </Container>
+        </FormContainer>
+      </SectionBackground>
     </PageTransition>
   );
 };
