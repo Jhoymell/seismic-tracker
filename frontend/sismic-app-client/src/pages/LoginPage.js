@@ -13,7 +13,6 @@ import {
   TextField, 
   Box, 
   Typography, 
-  Container, 
   CircularProgress,
   Dialog,
   DialogActions,
@@ -21,7 +20,6 @@ import {
   DialogContentText,
   DialogTitle,
   Fade,
-  Grid
 } from '@mui/material';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 
@@ -29,15 +27,18 @@ import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import { loginUser } from '../api/auth';
 import useAuthStore from '../store/authStore';
 import PageTransition from '../components/utils/PageTransition';
-import theme from '../theme';
+import { 
+  SectionBackground, 
+  FormContainer, 
+  GradientTitle,
+  GradientSubtitle
+} from '../components/shared/StyledComponents';
 
 // Esquema de validación para el formulario de login
 const schema = yup.object().shape({
   email: yup.string().email('Debe ser un correo válido').required('El correo es obligatorio'),
   password: yup.string().required('La contraseña es obligatoria'),
 });
-
-const MotionBox = motion(Box);
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -77,34 +78,19 @@ const LoginPage = () => {
     }
   };
 
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } },
-  };
-
   return (
     <PageTransition>
-      <Container component="main" maxWidth="xs">
+      <SectionBackground>
         <Toaster position="top-center" />
-        <MotionBox
-          variants={formVariants}
-          initial="hidden"
-          animate="visible"
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            backgroundColor: 'background.paper',
-            padding: { xs: 2, sm: 4 },
-            borderRadius: '1rem',
-            boxShadow: 3,
-          }}
-        >
-          <Typography component="h1" variant="h5">
+        <FormContainer maxWidth="sm">
+          <GradientTitle variant="h4" component="h1" sx={{ textAlign: 'center', mb: 1 }}>
             Iniciar Sesión
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
+          </GradientTitle>
+          <GradientSubtitle sx={{ textAlign: 'center', mb: 4, fontSize: { xs: '1rem', md: '1.2rem' } }}>
+            Accede a tu cuenta para monitorear la actividad sísmica global
+          </GradientSubtitle>
+          
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }}>
             <TextField
               margin="normal"
               required
@@ -115,6 +101,11 @@ const LoginPage = () => {
               {...register('email')}
               error={!!errors.email}
               helperText={errors.email?.message}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
             />
             <TextField
               margin="normal"
@@ -127,6 +118,11 @@ const LoginPage = () => {
               {...register('password')}
               error={!!errors.password}
               helperText={errors.password?.message}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '12px',
+                },
+              }}
             />
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
@@ -134,36 +130,53 @@ const LoginPage = () => {
                 fullWidth
                 variant="contained"
                 disabled={isSubmitting}
-                sx={{ mt: 3, mb: 2, py: 1.5 }}
+                sx={{ 
+                  mt: 3, 
+                  mb: 2, 
+                  py: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
               >
                 {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Ingresar'}
               </Button>
             </motion.div>
-            <Grid container justifyContent="space-between">
-              <Grid item>
-                <Typography variant="body2">
-                  <Link to="/olvide-mi-password" style={{ color: theme.palette.primary.main, textDecoration: 'none' }}>
-                    ¿Olvidaste tu contraseña?
-                  </Link>
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Typography variant="body2">
-                  <Link to="/registro" style={{ color: theme.palette.primary.main, textDecoration: 'none' }}>
-                    Regístrate aquí
-                  </Link>
-                </Typography>
-              </Grid>
-            </Grid>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+              <Typography variant="body2">
+                <Link to="/olvide-mi-password" style={{ color: '#2196f3', textDecoration: 'none' }}>
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </Typography>
+              <Typography variant="body2">
+                <Link to="/registro" style={{ color: '#2196f3', textDecoration: 'none' }}>
+                  Regístrate aquí
+                </Link>
+              </Typography>
+            </Box>
           </Box>
-        </MotionBox>
-      </Container>
+        </FormContainer>
+      </SectionBackground>
       <Dialog
         open={showInactivityModal}
         onClose={handleCloseModal}
         TransitionComponent={Fade}
-        transitionDuration={700} // antes 200, ahora 0.7s consistente
-        PaperProps={{ sx: { borderRadius: '1rem', padding: '1rem' } }}
+        transitionDuration={700}
+        PaperProps={{ 
+          sx: { 
+            borderRadius: '1.5rem', 
+            padding: '1rem',
+            background: 'rgba(30, 30, 30, 0.95)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(33, 150, 243, 0.1)',
+          } 
+        }}
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <AccessTimeFilledIcon color="primary" fontSize="large" />
@@ -177,7 +190,19 @@ const LoginPage = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseModal} variant="contained" autoFocus>
+          <Button 
+            onClick={handleCloseModal} 
+            variant="contained" 
+            autoFocus
+            sx={{
+              borderRadius: '12px',
+              fontWeight: 700,
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+              '&:hover': {
+                background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+              },
+            }}
+          >
             Entendido
           </Button>
         </DialogActions>

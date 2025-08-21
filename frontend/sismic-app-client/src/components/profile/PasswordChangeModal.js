@@ -52,12 +52,12 @@ const PasswordChangeModal = ({ open, onClose }) => {
   const [passwordChecks, setPasswordChecks] = useState({ length: false, uppercase: false, lowercase: false, number: false, specialChar: false });
   
   const newPasswordValue = watch('new_password1', '');
-  const strengthLabels = ["Muy Débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"];
   const strengthColors = ["error", "error", "warning", "success", "success"];
 
   useEffect(() => {
     // Solo recalculamos si el modal está abierto para optimizar
     if (open) {
+      const strengthLabels = ["Muy Débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"];
       const result = zxcvbn(newPasswordValue || '');
       setPasswordStrength({ score: result.score, label: strengthLabels[result.score] });
       setPasswordChecks({
