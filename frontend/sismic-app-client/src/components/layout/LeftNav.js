@@ -4,7 +4,7 @@ import useAuthStore from '../../store/authStore';
 import './LeftNav.css';
 
 const LeftNav = () => {
-  const { isAuthenticated, logout, user, isSidebarOpen, closeSidebar } = useAuthStore();
+  const { isAuthenticated, logout, user, isSidebarOpen, closeSidebar, toggleSidebar } = useAuthStore();
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
 
@@ -16,41 +16,60 @@ const LeftNav = () => {
 
   const handleLinkClick = () => {
     closeSidebar();
+    setExpanded(false);
   };
 
-  // Ajusta el offset global del layout para que el sidebar no tape el contenido
+  const handleToggleClick = () => {
+    if (window.innerWidth <= 600) {
+      // En móvil, usar el estado global del sidebar
+      toggleSidebar();
+    } else {
+      // En desktop/tablet, usar el estado local de expansión
+      setExpanded(!expanded);
+    }
+  };
+
+  // Mejorar la gestión del hover en desktop
+  const handleMouseEnter = () => {
+    if (window.innerWidth > 600 && !isSidebarOpen) {
+      setExpanded(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (window.innerWidth > 600 && !isSidebarOpen) {
+      setExpanded(false);
+    }
+  };
+
+  // Limpiar estados al cambiar tamaño de ventana
   useEffect(() => {
-    const updateOffset = () => {
-      const isDesktop = window.matchMedia('(min-width: 900px)').matches;
-      const collapsedDesktop = '72px';
-      const collapsedMobile = '64px';
-      const expandedDesktop = '260px';
-
-      const offset = isDesktop
-        ? ((isSidebarOpen || expanded) ? expandedDesktop : collapsedDesktop)
-        : collapsedMobile; // en mobile no empuja el contenido cuando se expande (overlay)
-
-      document.documentElement.style.setProperty('--sidebar-offset', offset);
+    const handleResize = () => {
+      if (window.innerWidth > 600) {
+        closeSidebar(); // Cerrar sidebar móvil si estaba abierto
+      } else {
+        setExpanded(false); // Cerrar expansión desktop si estaba abierta
+      }
     };
 
-    updateOffset();
-    window.addEventListener('resize', updateOffset);
-    return () => window.removeEventListener('resize', updateOffset);
-  }, [expanded, isSidebarOpen]);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [closeSidebar]);
 
   return (
     <>
       <nav
-        className={`left-nav ${isSidebarOpen || expanded ? 'open expanded' : ''}`}
-        onMouseEnter={() => setExpanded(true)}
-        onMouseLeave={() => {
-          setExpanded(false);
-          closeSidebar();
-        }}
+        className={`left-nav ${(isSidebarOpen || expanded) ? 'open expanded' : ''}`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {/* Encabezado con ícono hamburguesa y título */}
         <div className="left-nav__header">
-          <button className="left-nav__toggle" aria-label="Menú lateral">
+          <button 
+            className="left-nav__toggle" 
+            onClick={handleToggleClick}
+            aria-label="Alternar menú lateral"
+          >
             <span></span>
             <span></span>
             <span></span>

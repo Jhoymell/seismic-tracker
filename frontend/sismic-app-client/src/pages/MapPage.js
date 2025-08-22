@@ -9,6 +9,7 @@ import MapFilters from "../components/map/MapFilters";
 import "./MapPage.css";
 import dayjs from "dayjs";
 import { sismoIcon } from '../components/map/mapIcons';
+import { commonStyles, spacing } from '../styles/commonStyles';
 
 // Usamos Box de MUI para mantener consistencia con el estilo
 const MapPage = () => {
@@ -85,12 +86,21 @@ const MapPage = () => {
 
   return (
     <PageTransition>
-      <Toaster position="top-center" />
-      <MapFilters filters={filters} setFilters={setFilters} />
-      <Paper
-        elevation={3}
-        sx={{ height: "calc(100vh - 220px)", width: "100%" }}
-      >
+      <Box sx={{ 
+        ...commonStyles.pageContainer,
+        p: 2,
+      }}>
+        <Toaster position="top-center" />
+        <MapFilters filters={filters} setFilters={setFilters} />
+        <Paper
+          elevation={3}
+          sx={{ 
+            height: "calc(100vh - 220px)", 
+            width: "100%",
+            borderRadius: spacing.borderRadius,
+            overflow: 'hidden',
+          }}
+        >
         {loading && <div className="loading-overlay">Cargando...</div>}
         <MapContainer
           center={[9.63, -84.08]}
@@ -132,6 +142,7 @@ const MapPage = () => {
 )) }
         </MapContainer>
       </Paper>
+      </Box>
     </PageTransition>
   );
 };

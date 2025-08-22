@@ -5,6 +5,7 @@ import UserManagement from '../components/admin/UserManagement';
 import NewsManagement from '../components/admin/NewsManagement';
 import PeopleIcon from '@mui/icons-material/People';
 import ArticleIcon from '@mui/icons-material/Article';
+import { commonStyles } from '../styles/commonStyles';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -15,11 +16,30 @@ const AdminPage = () => {
 
   return (
     <PageTransition>
-      <Box sx={{ width: '100%', p: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+      <Box sx={{ 
+        ...commonStyles.pageContainer,
+        width: '100%', 
+        p: 3,
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          gutterBottom
+          sx={{
+            ...commonStyles.pageTitle,
+            fontSize: { xs: '1.8rem', md: '2.2rem' },
+            letterSpacing: '-0.5px',
+            mb: 3,
+          }}
+        >
           Panel de Administración
         </Typography>
-        <Paper elevation={3}>
+        <Paper 
+          elevation={3}
+          sx={{
+            ...commonStyles.lightCard,
+          }}
+        >
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={activeTab} onChange={handleChange} centered>
               <Tab icon={<PeopleIcon />} iconPosition="start" label="Gestionar Usuarios" />

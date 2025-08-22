@@ -139,10 +139,10 @@ const ResetPasswordPage = () => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            backgroundColor: 'background.paper',
+            background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
             padding: { xs: 2, sm: 4 },
             borderRadius: '1rem',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            boxShadow: '0 2px 16px 0 #00bcd422',
             position: 'relative',
             overflow: 'hidden',
             '&::before': {
@@ -152,7 +152,7 @@ const ResetPasswordPage = () => {
               left: 0,
               right: 0,
               height: '4px',
-              background: 'linear-gradient(90deg, #1976d2, #64b5f6)',
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
             },
           }}
         >
@@ -184,11 +184,13 @@ const ResetPasswordPage = () => {
             variant="h5" 
             sx={{ 
               mb: 2,
-              fontWeight: 600,
-              background: 'linear-gradient(45deg, #1976d2, #64b5f6)',
-              backgroundClip: 'text',
+              fontWeight: 800,
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
               WebkitBackgroundClip: 'text',
-              color: 'transparent',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              letterSpacing: '-0.3px',
+              filter: 'drop-shadow(0 2px 12px #00e5ff33)',
             }}
           >
             Restablecer Contraseña
@@ -388,7 +390,19 @@ const ResetPasswordPage = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, py: 1.5 }}
+                sx={{ 
+                  mt: 3, 
+                  mb: 2, 
+                  py: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
                 disabled={
                   isSubmitting || 
                   !!errorMessage || 
@@ -408,7 +422,7 @@ const ResetPasswordPage = () => {
               <Typography variant="body2" align="center" sx={{ mt: 2 }}>
                 <Link
                   to="/olvide-mi-password"
-                  style={{ color: '#1976d2', textDecoration: 'none' }}
+                  style={{ color: '#2196f3', textDecoration: 'none' }}
                 >
                   Solicitar nuevo restablecimiento
                 </Link>
@@ -418,7 +432,7 @@ const ResetPasswordPage = () => {
             <Typography variant="body2" align="center" sx={{ mt: 2 }}>
               <Link
                 to="/login"
-                style={{ color: '#1976d2', textDecoration: 'none' }}
+                style={{ color: '#2196f3', textDecoration: 'none' }}
               >
                 Volver al inicio de sesión
               </Link>

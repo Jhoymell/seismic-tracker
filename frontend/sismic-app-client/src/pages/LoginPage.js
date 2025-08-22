@@ -30,6 +30,7 @@ import { loginUser } from '../api/auth';
 import useAuthStore from '../store/authStore';
 import PageTransition from '../components/utils/PageTransition';
 import theme from '../theme';
+import { commonStyles, animations } from '../styles/commonStyles';
 
 // Esquema de validación para el formulario de login
 const schema = yup.object().shape({
@@ -77,31 +78,27 @@ const LoginPage = () => {
     }
   };
 
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } },
-  };
-
   return (
     <PageTransition>
       <Container component="main" maxWidth="xs">
         <Toaster position="top-center" />
         <MotionBox
-          variants={formVariants}
+          variants={animations.fadeInUp}
           initial="hidden"
           animate="visible"
           sx={{
+            ...commonStyles.formContainer,
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            backgroundColor: 'background.paper',
-            padding: { xs: 2, sm: 4 },
-            borderRadius: '1rem',
-            boxShadow: 3,
           }}
         >
-          <Typography component="h1" variant="h5">
+          <Typography 
+            component="h1" 
+            variant="h5"
+            sx={{
+              ...commonStyles.pageTitle,
+              mb: 3,
+            }}
+          >
             Iniciar Sesión
           </Typography>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
@@ -134,7 +131,19 @@ const LoginPage = () => {
                 fullWidth
                 variant="contained"
                 disabled={isSubmitting}
-                sx={{ mt: 3, mb: 2, py: 1.5 }}
+                sx={{ 
+                  mt: 3, 
+                  mb: 2, 
+                  py: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
               >
                 {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Ingresar'}
               </Button>
