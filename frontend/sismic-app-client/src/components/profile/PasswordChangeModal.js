@@ -52,12 +52,10 @@ const PasswordChangeModal = ({ open, onClose }) => {
   const [passwordChecks, setPasswordChecks] = useState({ length: false, uppercase: false, lowercase: false, number: false, specialChar: false });
   
   const newPasswordValue = watch('new_password1', '');
-  const strengthLabels = ["Muy Débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"];
-  const strengthColors = ["error", "error", "warning", "success", "success"];
-
   useEffect(() => {
     // Solo recalculamos si el modal está abierto para optimizar
     if (open) {
+      const strengthLabels = ["Muy Débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"];
       const result = zxcvbn(newPasswordValue || '');
       setPasswordStrength({ score: result.score, label: strengthLabels[result.score] });
       setPasswordChecks({
@@ -132,7 +130,7 @@ const PasswordChangeModal = ({ open, onClose }) => {
         {newPasswordValue && (
           <Box sx={{ width: '100%', my: 2 }}>
             <Typography variant='caption' component="div" color="text.secondary" sx={{mb: 1}}>Fortaleza: {passwordStrength.label}</Typography>
-            <LinearProgress variant="determinate" value={(passwordStrength.score + 1) * 20} color={strengthColors[passwordStrength.score]} />
+            <LinearProgress variant="determinate" value={(passwordStrength.score + 1) * 20} color={["error", "error", "warning", "success", "success"][passwordStrength.score]} />
             <Box sx={{mt: 1.5}}>
               {Object.entries(passwordChecks).map(([key, value]) => {
                 const labels = {length: "8 caracteres", uppercase: "1 mayúscula", lowercase: "1 minúscula", number: "1 número", specialChar: "1 símbolo"};

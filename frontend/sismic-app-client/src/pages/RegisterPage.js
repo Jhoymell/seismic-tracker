@@ -109,10 +109,10 @@ const RegisterPage = () => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              backgroundColor: 'background.paper',
+              background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
               padding: { xs: 2, sm: 4 },
               borderRadius: '1rem',
-              boxShadow: '0 2px 16px 0 #00bcd422', // sombra consistente
+              boxShadow: '0 2px 16px 0 #00bcd422',
             }}
           >
             <Typography
@@ -158,7 +158,20 @@ const RegisterPage = () => {
           </Button>
           
           {activeStep < steps.length - 1 ? (
-            <Button variant="contained" onClick={handleNext}>
+            <Button 
+              variant="contained" 
+              onClick={handleNext}
+              sx={{
+                borderRadius: '12px',
+                fontWeight: 700,
+                boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                '&:hover': {
+                  background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                  boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                },
+              }}
+            >
               Siguiente
             </Button>
           ) : (
@@ -167,6 +180,16 @@ const RegisterPage = () => {
               form="register-form"
               variant="contained"
               disabled={methods.formState.isSubmitting}
+              sx={{
+                borderRadius: '12px',
+                fontWeight: 700,
+                boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                '&:hover': {
+                  background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                  boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                },
+              }}
             >
               {methods.formState.isSubmitting ? <CircularProgress size={24}/> : 'Crear Cuenta'}
             </Button>

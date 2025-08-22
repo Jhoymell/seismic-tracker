@@ -15,7 +15,6 @@ const slideVariants = {
 const AccountStep = ({ passwordStrength, passwordChecks }) => {
   const { control, formState: { errors, touchedFields } } = useFormContext();
 
-  const strengthLabels = ["Muy Débil", "Débil", "Regular", "Fuerte", "Muy Fuerte"];
   const strengthColors = ["error", "error", "warning", "success", "success"];
 
   const getAdornment = (fieldName) => {

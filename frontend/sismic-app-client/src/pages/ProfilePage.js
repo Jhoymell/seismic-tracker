@@ -5,7 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import toast, { Toaster } from "react-hot-toast";
 import PhoneInput from "react-phone-number-input";
-import { motion } from "framer-motion";
 // Importaciones de MUI
 import {
   Button,
