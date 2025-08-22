@@ -30,6 +30,7 @@ import { loginUser } from '../api/auth';
 import useAuthStore from '../store/authStore';
 import PageTransition from '../components/utils/PageTransition';
 import theme from '../theme';
+import { commonStyles, animations } from '../styles/commonStyles';
 
 // Esquema de validación para el formulario de login
 const schema = yup.object().shape({
@@ -77,42 +78,25 @@ const LoginPage = () => {
     }
   };
 
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } },
-  };
-
   return (
     <PageTransition>
       <Container component="main" maxWidth="xs">
         <Toaster position="top-center" />
         <MotionBox
-          variants={formVariants}
+          variants={animations.fadeInUp}
           initial="hidden"
           animate="visible"
           sx={{
+            ...commonStyles.formContainer,
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
-            padding: { xs: 2, sm: 4 },
-            borderRadius: '1rem',
-            boxShadow: '0 2px 16px 0 #00bcd422',
           }}
         >
           <Typography 
             component="h1" 
             variant="h5"
             sx={{
+              ...commonStyles.pageTitle,
               mb: 3,
-              background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              fontWeight: 800,
-              letterSpacing: '-0.3px',
-              filter: 'drop-shadow(0 2px 12px #00e5ff33)',
             }}
           >
             Iniciar Sesión

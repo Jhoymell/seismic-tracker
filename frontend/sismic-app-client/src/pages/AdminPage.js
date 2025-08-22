@@ -5,6 +5,7 @@ import UserManagement from '../components/admin/UserManagement';
 import NewsManagement from '../components/admin/NewsManagement';
 import PeopleIcon from '@mui/icons-material/People';
 import ArticleIcon from '@mui/icons-material/Article';
+import { commonStyles } from '../styles/commonStyles';
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -16,24 +17,18 @@ const AdminPage = () => {
   return (
     <PageTransition>
       <Box sx={{ 
+        ...commonStyles.pageContainer,
         width: '100%', 
         p: 3,
-        background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
-        borderRadius: '1rem',
-        boxShadow: '0 2px 16px 0 #00bcd422',
       }}>
         <Typography 
           variant="h4" 
           component="h1" 
           gutterBottom
           sx={{
-            background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            fontWeight: 800,
+            ...commonStyles.pageTitle,
+            fontSize: { xs: '1.8rem', md: '2.2rem' },
             letterSpacing: '-0.5px',
-            filter: 'drop-shadow(0 2px 16px #00e5ff33)',
             mb: 3,
           }}
         >
@@ -42,8 +37,7 @@ const AdminPage = () => {
         <Paper 
           elevation={3}
           sx={{
-            background: 'linear-gradient(135deg, #f8fdff 80%, #e3f7fa 100%)',
-            borderRadius: '1rem',
+            ...commonStyles.lightCard,
           }}
         >
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

@@ -22,6 +22,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { getProfile, updateProfile } from "../api/user";
 import useAuthStore from "../store/authStore";
 import PasswordChangeModal from "../components/profile/PasswordChangeModal";
+import { commonStyles } from '../styles/commonStyles';
 const BACKEND_URL = 'http://127.0.0.1:8000';
 
 const profileSchema = yup.object().shape({
@@ -162,29 +163,16 @@ const ProfilePage = () => {
         ) : (
           <Box
             sx={{
+              ...commonStyles.formContainer,
               marginTop: 4,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              background: "linear-gradient(135deg, #0a121e 80%, #10131a 100%)", // estilo consistente
-              padding: { xs: 2, sm: 4 },
-              borderRadius: "1rem",
-              boxShadow: "0 2px 16px 0 #00bcd422",
             }}
           >
             <Typography
               component="h1"
               variant="h5"
               sx={{
+                ...commonStyles.pageTitle,
                 mb: 3,
-                background:
-                  "linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-                fontWeight: 800,
-                letterSpacing: "-0.3px",
-                filter: "drop-shadow(0 2px 12px #00e5ff33)",
               }}
             >
               Mi Perfil
