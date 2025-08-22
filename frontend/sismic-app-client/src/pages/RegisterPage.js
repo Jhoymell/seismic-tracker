@@ -1,9 +1,9 @@
 import PageTransition from '../components/utils/PageTransition';
 import React, { useState, useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form'; // FormProvider es clave para formularios por pasos
+import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { AnimatePresence } from 'framer-motion';
 import zxcvbn from 'zxcvbn';
 
@@ -27,7 +27,7 @@ const RegisterPage = () => {
 
   // onSubmit debe estar definido antes del return
   const onSubmit = async (data) => {
-    const loadingToast = window.toast.loading('Registrando tu cuenta...');
+    const loadingToast = toast.loading('Registrando tu cuenta...'); // Usar toast importado
     const submissionData = { ...data };
     if (submissionData.fecha_nacimiento instanceof Date) {
       const year = submissionData.fecha_nacimiento.getFullYear();
@@ -37,10 +37,10 @@ const RegisterPage = () => {
     }
     try {
       const response = await registerUser(submissionData);
-      window.toast.success(response.message, { id: loadingToast });
+      toast.success(response.message, { id: loadingToast }); // Usar toast importado
       setTimeout(() => navigate('/login'), 2000);
     } catch (error) {
-      window.toast.error('Hubo un error al registrar la cuenta.', { id: loadingToast });
+      toast.error('Hubo un error al registrar la cuenta.', { id: loadingToast }); // Usar toast importado
     }
   };
 
@@ -57,7 +57,7 @@ const RegisterPage = () => {
       first_name: '',
       last_name: '',
       telefono: '',
-      fecha_nacimiento: '',
+      fecha_nacimiento: null, // Cambiado de '' a null para compatibilidad con DatePicker
     }
   });
 
@@ -82,8 +82,6 @@ const RegisterPage = () => {
   }, [passwordValue]);
 
   // --- CAMBIO 3: Funciones para navegar entre pasos ---
-
-
   const handleNext = async () => {
     const isStepValid = await methods.trigger();
     if (isStepValid) {
@@ -95,109 +93,105 @@ const RegisterPage = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-
-
-
-
-    return (
-      <PageTransition>
-        <Container component="main" maxWidth="sm">
-          <Toaster position="top-center" />
-          <Box
+  return (
+    <PageTransition>
+      <Container component="main" maxWidth="sm">
+        <Toaster position="top-center" />
+        <Box
+          sx={{
+            marginTop: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
+            padding: { xs: 2, sm: 4 },
+            borderRadius: '1rem',
+            boxShadow: '0 2px 16px 0 #00bcd422',
+          }}
+        >
+          <Typography
+            component="h1"
+            variant="h5"
             sx={{
-              marginTop: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
-              padding: { xs: 2, sm: 4 },
-              borderRadius: '1rem',
-              boxShadow: '0 2px 16px 0 #00bcd422',
+              mb: 3,
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              fontWeight: 800,
+              letterSpacing: '-0.3px',
+              filter: 'drop-shadow(0 2px 12px #00e5ff33)',
             }}
           >
-            <Typography
-              component="h1"
-              variant="h5"
-              sx={{
-                mb: 3,
-                background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                fontWeight: 800,
-                letterSpacing: '-0.3px',
-                filter: 'drop-shadow(0 2px 12px #00e5ff33)',
-              }}
-            >
-              Crear una Cuenta
-            </Typography>
-            <Stepper activeStep={activeStep} sx={{ mb: 4, width: '100%' }}>
-              {steps.map((label) => (
-                <Step key={label}><StepLabel>{label}</StepLabel></Step>
-              ))}
-            </Stepper>
+            Crear una Cuenta
+          </Typography>
+          <Stepper activeStep={activeStep} sx={{ mb: 4, width: '100%' }}>
+            {steps.map((label) => (
+              <Step key={label}><StepLabel>{label}</StepLabel></Step>
+            ))}
+          </Stepper>
 
-        <FormProvider {...methods}>
-          <form id="register-form" onSubmit={methods.handleSubmit(onSubmit)}>
-            <AnimatePresence mode="wait">
-              {activeStep === 0 && (
-                <AccountStep 
-                  key="step1" 
-                  passwordStrength={passwordStrength} 
-                  passwordChecks={passwordChecks} 
-                />
-              )}
-              {activeStep === 1 && <PersonalStep key="step2" />}
-            </AnimatePresence>
-          </form>
-        </FormProvider>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 4 }}>
-          <Button disabled={activeStep === 0} onClick={handleBack}>
-            Atrás
-          </Button>
+          <FormProvider {...methods}>
+            <form id="register-form" onSubmit={methods.handleSubmit(onSubmit)}>
+              <AnimatePresence mode="wait">
+                {activeStep === 0 && (
+                  <AccountStep 
+                    key="step1" 
+                    passwordStrength={passwordStrength} 
+                    passwordChecks={passwordChecks} 
+                  />
+                )}
+                {activeStep === 1 && <PersonalStep key="step2" />}
+              </AnimatePresence>
+            </form>
+          </FormProvider>
           
-          {activeStep < steps.length - 1 ? (
-            <Button 
-              variant="contained" 
-              onClick={handleNext}
-              sx={{
-                borderRadius: '12px',
-                fontWeight: 700,
-                boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
-                background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
-                '&:hover': {
-                  background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
-                  boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
-                },
-              }}
-            >
-              Siguiente
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mt: 4 }}>
+            <Button disabled={activeStep === 0} onClick={handleBack}>
+              Atrás
             </Button>
-          ) : (
-            <Button
-              type="submit"
-              form="register-form"
-              variant="contained"
-              disabled={methods.formState.isSubmitting}
-              sx={{
-                borderRadius: '12px',
-                fontWeight: 700,
-                boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
-                background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
-                '&:hover': {
-                  background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
-                  boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
-                },
-              }}
-            >
-              {methods.formState.isSubmitting ? <CircularProgress size={24}/> : 'Crear Cuenta'}
-            </Button>
-          )}
+            
+            {activeStep < steps.length - 1 ? (
+              <Button 
+                variant="contained" 
+                onClick={handleNext}
+                sx={{
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
+              >
+                Siguiente
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                form="register-form"
+                variant="contained"
+                disabled={methods.formState.isSubmitting}
+                sx={{
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
+              >
+                {methods.formState.isSubmitting ? <CircularProgress size={24}/> : 'Crear Cuenta'}
+              </Button>
+            )}
+          </Box>
         </Box>
-      </Box>
-    </Container>
-  </PageTransition>
+      </Container>
+    </PageTransition>
   );
 };
 

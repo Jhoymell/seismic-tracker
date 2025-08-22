@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import './LeftNav.css';
@@ -17,26 +17,6 @@ const LeftNav = () => {
   const handleLinkClick = () => {
     closeSidebar();
   };
-
-  // Ajusta el offset global del layout para que el sidebar no tape el contenido
-  useEffect(() => {
-    const updateOffset = () => {
-      const isDesktop = window.matchMedia('(min-width: 900px)').matches;
-      const collapsedDesktop = '72px';
-      const collapsedMobile = '64px';
-      const expandedDesktop = '260px';
-
-      const offset = isDesktop
-        ? ((isSidebarOpen || expanded) ? expandedDesktop : collapsedDesktop)
-        : collapsedMobile; // en mobile no empuja el contenido cuando se expande (overlay)
-
-      document.documentElement.style.setProperty('--sidebar-offset', offset);
-    };
-
-    updateOffset();
-    window.addEventListener('resize', updateOffset);
-    return () => window.removeEventListener('resize', updateOffset);
-  }, [expanded, isSidebarOpen]);
 
   return (
     <>

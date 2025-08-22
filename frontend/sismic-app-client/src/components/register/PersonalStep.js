@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import PhoneInput from 'react-phone-number-input';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const slideVariants = {
   hidden: { x: '100vw', opacity: 0 },
@@ -54,9 +55,26 @@ const PersonalStep = () => {
           {errors.telefono && <Typography color="error" variant="caption">{errors.telefono.message}</Typography>}
         </Grid>
         <Grid item xs={12}>
-          <Controller name="fecha_nacimiento" control={control} render={({ field }) => (
-            <TextField {...field} fullWidth type="date" label="Fecha de Nacimiento" sx={getFieldSx('fecha_nacimiento')} error={!!errors.fecha_nacimiento} helperText={errors.fecha_nacimiento?.message} InputLabelProps={{ shrink: true }} />
-          )}/>
+          <Controller
+            name="fecha_nacimiento"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                label="Fecha de Nacimiento"
+                value={field.value}
+                onChange={field.onChange}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    variant: "outlined",
+                    error: !!errors.fecha_nacimiento,
+                    helperText: errors.fecha_nacimiento?.message,
+                    sx: getFieldSx('fecha_nacimiento'),
+                  },
+                }}
+              />
+            )}
+          />
         </Grid>
       </Grid>
     </motion.div>
