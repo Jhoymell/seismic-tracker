@@ -29,7 +29,21 @@ const MainLayout = ({ children }) => {
           <LeftNav />
 
           {/* Este Box es el área de contenido principal */}
-          <Box component="main" sx={{ flexGrow: 1, p: 3, overflowY: "auto" }}>
+          <Box 
+            component="main" 
+            sx={{ 
+              flexGrow: 1, 
+              p: 3, 
+              overflowY: "auto",
+              // Ajuste automático para el sidebar en desktop
+              marginLeft: { 
+                xs: 0, // Sin margen en móvil (overlay)
+                sm: 0, // Sin margen en tablet (overlay)
+                md: '72px' // Margen en desktop para el sidebar colapsado
+              },
+              transition: 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
             {children}
           </Box>
 

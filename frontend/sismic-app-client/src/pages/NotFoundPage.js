@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import PageTransition from '../components/utils/PageTransition';
+import { commonStyles, gradients } from '../styles/commonStyles';
 
 const NotFoundPage = () => {
   return (
@@ -15,7 +16,7 @@ const NotFoundPage = () => {
           justifyContent: 'center',
           textAlign: 'center',
           p: 3,
-          background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)',
+          background: gradients.primaryBackground,
           borderRadius: '1rem',
           boxShadow: '0 2px 16px 0 #00bcd422',
         }}
@@ -23,12 +24,9 @@ const NotFoundPage = () => {
         <Typography
           variant="h3"
           sx={{
+            ...commonStyles.pageTitle,
             mb: 2,
-            background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            fontWeight: 800,
+            fontSize: { xs: '2rem', md: '3rem' },
             letterSpacing: '-0.5px',
           }}
         >
@@ -42,15 +40,8 @@ const NotFoundPage = () => {
           to="/"
           variant="contained"
           sx={{
-            borderRadius: '12px',
-            fontWeight: 700,
+            ...commonStyles.primaryButton,
             px: 3,
-            background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
-            boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
-            '&:hover': {
-              background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
-              boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
-            },
           }}
         >
           Volver al inicio
