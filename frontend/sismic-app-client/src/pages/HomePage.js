@@ -12,22 +12,12 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 // Importamos nuestro nuevo componente
 import MapPreview from '../components/home/MapPreview';
 
+// Importamos los estilos comunes
+import { gradients, shadows, commonStyles, animations } from '../styles/commonStyles';
+
 
 const HomePage = () => {
   const { isAuthenticated } = useAuthStore();
-
-  // Objeto de variantes para la animación de las tarjetas
-  const featureVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    },
-  };
 
   // Scroll suave a la sección de características
   const scrollToFeatures = () => {
@@ -128,13 +118,13 @@ const HomePage = () => {
               variant="h5"
               sx={{
                 my: 3,
-                background: 'linear-gradient(90deg, #00bcd4, #2196f3 60%, #00e5ff)',
+                background: gradients.primaryText,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 fontWeight: 600,
                 fontSize: { xs: '1.2rem', md: '1.7rem' },
                 letterSpacing: '-0.5px',
-                textShadow: '0 1px 8px #00e5ff33',
+                textShadow: shadows.text,
               }}
             >
               Una plataforma interactiva para la visualización y análisis de datos sísmicos globales en tiempo real.<br />
@@ -143,20 +133,10 @@ const HomePage = () => {
           </motion.div>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap', mt: 2 }}>
             <Button component={Link} to={isAuthenticated ? "/mapa" : "/registro"} variant="contained" size="large" sx={{
+              ...commonStyles.primaryButton,
               py: 1.5,
               px: 4,
-              borderRadius: '50px',
-              fontWeight: 'bold',
               fontSize: '1.1rem',
-              boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
-              background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
-              color: '#fff',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              '&:hover': {
-                transform: 'scale(1.05)',
-                background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
-                boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)'
-              }
             }}>
               {isAuthenticated ? "Ver Mapa en Vivo" : "Regístrate para Empezar"}
             </Button>
@@ -204,17 +184,13 @@ const HomePage = () => {
       </Box>
 
       {/* SECCIÓN DE CARACTERÍSTICAS CON HOVER EFFECTS */}
-      <Box id="features-section" sx={{ py: 8, background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)' }}>
+      <Box id="features-section" sx={{ py: 8, background: gradients.primaryBackground }}>
         <Container maxWidth="lg">
           <Typography variant="h4" component="h2" fontWeight="bold" gutterBottom sx={{
-            background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            ...commonStyles.pageTitle,
             fontSize: { xs: '2rem', md: '2.5rem' },
             letterSpacing: '-1px',
             mb: 2,
-            filter: 'drop-shadow(0 2px 16px #00e5ff33)',
             textAlign: 'center',
             display: 'block',
           }}>
@@ -228,29 +204,23 @@ const HomePage = () => {
             {features.map((feature, index) => (
               <Grid item xs={12} md={4} key={index}>
                 <motion.div
-                  variants={featureVariants}
+                  variants={animations.featureCard}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.5 }}
-                  whileHover={{
-                    scale: 1.05,
-                    transition: { duration: 0.2 },
-                    boxShadow: '0px 4px 24px 0 #00bcd455',
-                  }}
+                  whileHover={animations.scaleOnHover}
                   style={{ cursor: 'pointer' }}
                   onClick={scrollToFeatures}
                 >
                   <Paper elevation={3} sx={{
+                    ...commonStyles.lightCard,
                     p: 4,
                     textAlign: 'center',
-                    borderRadius: '1rem',
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     transition: 'box-shadow 0.2s',
-                    background: 'linear-gradient(135deg, #f8fdff 80%, #e3f7fa 100%)',
-                    boxShadow: '0 2px 16px 0 #00bcd422',
                   }}>
                     <Box sx={{ mb: 2 }}>{feature.icon}</Box>
                     <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: '#2196f3', fontSize: '1.3rem' }}>{feature.title}</Typography>
@@ -263,7 +233,7 @@ const HomePage = () => {
         </Container>
       </Box>
       {/* --- NUEVA SECCIÓN DE VISTA PREVIA DEL MAPA --- */}
-      <Box sx={{ py: 10, background: 'linear-gradient(135deg, #0a121e 80%, #10131a 100%)' }}>
+      <Box sx={{ py: 10, background: gradients.primaryBackground }}>
         <Container maxWidth="lg">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -277,19 +247,15 @@ const HomePage = () => {
               borderRadius: '1.5rem',
               px: { xs: 2, md: 4 },
               py: { xs: 1, md: 2 },
-              boxShadow: '0 4px 32px 0 #0008',
+              boxShadow: shadows.primary,
               mb: 3,
               mx: 'auto',
               maxWidth: '100%',
             }}>
               <Typography variant="h4" component="h2" fontWeight="bold" gutterBottom sx={{
-                background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+                ...commonStyles.pageTitle,
                 fontSize: { xs: '2rem', md: '2.5rem' },
                 letterSpacing: '-1px',
-                filter: 'drop-shadow(0 2px 16px #00e5ff33)',
                 m: 0,
                 textAlign: 'center',
                 display: 'block',
@@ -315,10 +281,10 @@ const HomePage = () => {
             transition={{ duration: 0.7, delay: 0.3 }}
           >
             <Paper elevation={3} sx={{
+              ...commonStyles.lightCard,
               borderRadius: '1.5rem',
               p: { xs: 1, md: 3 },
-              background: 'linear-gradient(135deg, #10131a 80%, #0a121e 100%)',
-              boxShadow: '0 2px 16px 0 #00bcd422',
+              background: gradients.primaryBackground,
               maxWidth: 900,
               mx: 'auto',
             }}>

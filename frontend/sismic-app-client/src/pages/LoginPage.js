@@ -30,6 +30,7 @@ import { loginUser } from '../api/auth';
 import useAuthStore from '../store/authStore';
 import PageTransition from '../components/utils/PageTransition';
 import theme from '../theme';
+import { commonStyles, animations } from '../styles/commonStyles';
 
 // Esquema de validación para el formulario de login
 const schema = yup.object().shape({
@@ -77,21 +78,18 @@ const LoginPage = () => {
     }
   };
 
-  const formVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } },
-  };
-
   return (
     <PageTransition>
       <Container component="main" maxWidth="xs">
         <Toaster position="top-center" />
         <MotionBox
-          variants={formVariants}
+          variants={animations.fadeInUp}
           initial="hidden"
           animate="visible"
           sx={{
+            ...commonStyles.formContainer,
             marginTop: 8,
+<<<<<<< HEAD
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -102,6 +100,18 @@ const LoginPage = () => {
           }}
         >
           <Typography component="h1" variant="h5">
+=======
+          }}
+        >
+          <Typography 
+            component="h1" 
+            variant="h5"
+            sx={{
+              ...commonStyles.pageTitle,
+              mb: 3,
+            }}
+          >
+>>>>>>> 5616187fc8f3c0555c2fc5c1a994722a8e24d155
             Iniciar Sesión
           </Typography>
           <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>

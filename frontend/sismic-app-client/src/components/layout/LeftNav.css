@@ -1,63 +1,89 @@
 /* Contenedor base del sidebar */
 .left-nav {
   position: fixed;         /* fijo al lateral */
-  top: 0;
+  top: 64px;              /* espacio para el header */
   left: 0;
-  height: 100vh;
-  width: 40px;             /* colapsado */
+  height: calc(100vh - 64px);
+  width: 72px;             /* colapsado más amplio para mejor UX */
   background: linear-gradient(135deg, #0a121e 80%, #10131a 100%);
   border-right: 1px solid rgba(0, 188, 212, 0.15);
   box-shadow: 0 8px 32px rgba(0, 188, 212, 0.12);
-  transition: width .35s ease, box-shadow .25s ease, opacity .25s ease, transform .25s ease;
+  transition: width .3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s ease, opacity .25s ease;
   overflow: hidden;
-  z-index: 1100;           /* por encima del backdrop */
+  z-index: 1050;           /* debajo del header pero encima del contenido */
 }
 
-/* Colapsado por defecto: 40px (ligero y no invasivo) */
+/* Colapsado por defecto: 72px (más usable) */
 .left-nav {
+<<<<<<< HEAD
   width: 53px;
+=======
+  width: 72px;
+>>>>>>> 5616187fc8f3c0555c2fc5c1a994722a8e24d155
 }
 
 /* Expandido/abierto: ancho completo del sidebar */
 .left-nav.expanded,
-.left-nav.open { width: 260px; }
+.left-nav.open { 
+  width: 260px; 
+  box-shadow: 0 8px 40px rgba(0, 188, 212, 0.2);
+}
 
 /* Header del menú con botón hamburguesa */
 .left-nav__header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  height: 56px;
-  padding: 0 10px;
+  height: 64px;
+  padding: 0 12px;
   border-bottom: 1px solid rgba(0, 188, 212, 0.15);
 }
 
 .left-nav__toggle {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(0, 188, 212, 0.06);
-  border: 1px solid rgba(0, 188, 212, 0.20);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(0, 188, 212, 0.08);
+  border: 1px solid rgba(0, 188, 212, 0.25);
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  cursor: default; /* indicador visual; la apertura es por hover */
-  transition: background-color .2s ease, transform .15s ease, box-shadow .2s ease;
+  cursor: pointer; /* mejorado para interacción */
+  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .left-nav__toggle:hover {
-  background: rgba(0, 188, 212, 0.12);
+  background: rgba(0, 188, 212, 0.15);
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.18);
+  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.25);
 }
 
 .left-nav__toggle span {
   display: block;
-  width: 18px;
+  width: 20px;
   height: 2px;
   background: #b3e5fc;
   margin: 2px 0;
   border-radius: 2px;
+  transition: all .2s ease;
+}
+
+/* Animación del icono hamburguesa cuando está expandido */
+.left-nav.expanded .left-nav__toggle span:nth-child(1),
+.left-nav.open .left-nav__toggle span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.left-nav.expanded .left-nav__toggle span:nth-child(2),
+.left-nav.open .left-nav__toggle span:nth-child(2) {
+  opacity: 0;
+}
+
+.left-nav.expanded .left-nav__toggle span:nth-child(3),
+.left-nav.open .left-nav__toggle span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
 }
 
 /* Título del menú */
@@ -71,37 +97,64 @@
 .left-nav ul {
   list-style: none;
   margin: 0;
-  padding: 12px 6px;
+  padding: 16px 12px;
 }
 
-.left-nav ul li { margin: 0; padding: 0; }
+.left-nav ul li { 
+  margin: 8px 0; 
+  padding: 0; 
+}
 
-/* Items */
+/* Items - Mejorado para mejor accesibilidad */
 .left-nav .nav-item,
 .left-nav .MuiListItemButton-root {
   color: #e3f7fa;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
   width: 100%;
   text-align: left;
   background: transparent;
   border: 0;
   outline: 0;
-  border-radius: 10px;
-  margin: 6px 8px;
+  border-radius: 12px;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color .2s ease, color .2s ease, transform .15s ease, box-shadow .2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .left-nav .nav-item:hover,
 .left-nav .MuiListItemButton-root:hover {
-  background: rgba(0, 188, 212, 0.08);
+  background: rgba(0, 188, 212, 0.12);
   color: #00e5ff;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.18);
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0, 188, 212, 0.2);
+}
+
+.left-nav .nav-item:active,
+.left-nav .MuiListItemButton-root:active {
+  transform: translateX(2px);
+}
+
+/* Iconos placeholder - para futuras mejoras */
+.left-nav .nav-item::before {
+  content: '●';
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 188, 212, 0.1);
+  border-radius: 6px;
+  color: #00bcd4;
+  font-size: 12px;
+  flex-shrink: 0;
 }
 
 /* Iconos (si se agregan) */
@@ -139,7 +192,7 @@
   position: fixed;
   inset: 0;
   background-color: rgba(0,0,0,0.5);
-  z-index: 1099;
+  z-index: 1049;
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s ease;
@@ -150,24 +203,56 @@
   pointer-events: auto;
 }
 
-/* Tablet: mantenemos un “hot area” pequeño para hover; overlay sin empujar contenido */
-@media (max-width: 900px) {
-  .left-nav { width: 40px; }                 /* área mínima para hover */
+/* Responsive design mejorado */
+/* Desktop: sidebar empuja el contenido */
+@media (min-width: 901px) {
+  .left-nav { 
+    width: 72px; 
+  }
   .left-nav.expanded,
-  .left-nav.open { width: 76vw; }            /* overlay */
+  .left-nav.open { 
+    width: 260px; 
+  }
 }
 
-/* Móvil: oculto por completo cuando está colapsado; overlay solo cuando está abierto */
+/* Tablet: overlay mode con mejor usabilidad */
+@media (max-width: 900px) and (min-width: 601px) {
+  .left-nav { 
+    width: 72px;
+    z-index: 1200; /* mayor prioridad en tablet */
+  }
+  .left-nav.expanded,
+  .left-nav.open { 
+    width: 320px; /* un poco más ancho en tablet */
+    z-index: 1200;
+  }
+}
+
+/* Móvil: overlay completo */
 @media (max-width: 600px) {
   .left-nav {
-    width: 0;                                /* no se ve del todo */
+    width: 0;                                /* completamente oculto */
     border-right: none;
-    pointer-events: none;                    /* evita interferir con toques del contenido */
+    transform: translateX(-100%);            /* fuera de vista */
+    pointer-events: none;                    /* no interfiere con toques */
   }
   .left-nav.expanded,
   .left-nav.open {
-    width: 86vw;                             /* overlay responsivo */
+    width: min(90vw, 320px);                 /* responsive width */
+    transform: translateX(0);                /* desliza hacia adentro */
     border-right: 1px solid rgba(0, 188, 212, 0.15);
     pointer-events: auto;
+    z-index: 1300;                          /* máxima prioridad en móvil */
+  }
+  
+  /* En móvil, ajustar el header del sidebar */
+  .left-nav__header {
+    height: 64px;
+    padding: 0 16px;
+  }
+  
+  .left-nav .nav-item {
+    padding: 16px 20px;
+    font-size: 16px;
   }
 }
