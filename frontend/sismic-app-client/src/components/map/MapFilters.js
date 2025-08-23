@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, Slider, TextField, Paper } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { commonStyles } from '../../styles/commonStyles';
 
 // MapFilters: Componente para filtrar los sismos en el mapa
 // Permite filtrar por magnitud mínima, búsqueda por lugar y rango de fechas
@@ -23,7 +24,16 @@ const MapFilters = ({ filters, setFilters }) => {
 
   return (
     // Paper: Tarjeta visual para los filtros
-    <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+    <Paper
+      elevation={3}
+      sx={{
+        p: 2,
+        mb: 2,
+        borderRadius: "1rem",
+        background: "linear-gradient(135deg, #0a121e 80%, #10131a 100%)",
+        boxShadow: "0 2px 16px 0 #00bcd422",
+      }}
+    >
       {/* Box: Contenedor flexible para los filtros */}
       <Box
         sx={{
@@ -36,7 +46,10 @@ const MapFilters = ({ filters, setFilters }) => {
       >
         {/* Filtro de Magnitud Mínima */}
         <Box sx={{ width: { xs: "100%", md: 250 } }}>
-          <Typography gutterBottom>
+          <Typography
+            gutterBottom
+            sx={{ color: "#e3f7fa", fontWeight: 600 }}
+          >
             Magnitud Mínima: <strong>{filters.magnitud__gte}</strong>
           </Typography>
           <Slider
@@ -49,6 +62,17 @@ const MapFilters = ({ filters, setFilters }) => {
             step={0.1}
             min={4.0}
             max={9.0}
+            sx={{
+              color: "#00bcd4",
+              "& .MuiSlider-thumb": {
+                boxShadow: "0 0 0 6px rgba(0,188,212,0.16)",
+                "&:hover, &.Mui-focusVisible": {
+                  boxShadow: "0 0 0 8px rgba(0,188,212,0.24)",
+                },
+              },
+              "& .MuiSlider-track": { border: "none" },
+              "& .MuiSlider-rail": { opacity: 0.3 },
+            }}
           />
         </Box>
 
@@ -60,7 +84,10 @@ const MapFilters = ({ filters, setFilters }) => {
           name="search"
           value={filters.search}
           onChange={handleInputChange}
-          sx={{ width: { xs: "100%", md: 250 } }}
+          sx={{
+            width: { xs: "100%", md: 250 },
+            ...commonStyles.styledInput,
+          }}
         />
 
         <DatePicker
@@ -71,9 +98,11 @@ const MapFilters = ({ filters, setFilters }) => {
             textField: {
               size: "small",
               variant: "outlined",
-              // Esto permite que el usuario limpie la fecha
               InputProps: {
                 sx: { width: { xs: "100%", md: 250 } },
+              },
+              sx: {
+                ...commonStyles.styledInput,
               },
             },
           }}

@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import RegistroUsuarioView, PerfilUsuarioView, NoticiaViewSet # Importar el ViewSet
-from .views import RegistroUsuarioView, PerfilUsuarioView, NoticiaViewSet, EventoSismicoViewSet, UserManagementViewSet, ChangePasswordView# Importar
+from .views import RegistroUsuarioView, PerfilUsuarioView, NoticiaViewSet, EventoSismicoViewSet, UserManagementViewSet, ChangePasswordView
+from .views import PublicSismosView, sismos_diagnostics
 
 # Creamos un router
 router = DefaultRouter()
@@ -16,6 +16,8 @@ urlpatterns = [
     path('registro/', RegistroUsuarioView.as_view(), name='registro_usuario'), # Vista para registrar un nuevo usuario
     path('perfil/', PerfilUsuarioView.as_view(), name='perfil_usuario'), # Vista para ver y actualizar el perfil del usuario autenticado
     path('perfil/cambiar-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('sismos/public/', PublicSismosView.as_view(), name='sismos_publicos'),
+    path('sismos/diagnostics/', sismos_diagnostics, name='sismos_diagnostics'),
     # Incluimos las URLs generadas por el router
     path('', include(router.urls)),
 ]

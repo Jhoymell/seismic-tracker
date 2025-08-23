@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+/* === Layout global para evitar superposición del sidebar === */
+:root {
+  /* colapsado: 40px (no interfiere con títulos/contenido) */
+  --sidebar-offset: 40px;
+}
+
+body {
+  padding-left: var(--sidebar-offset);
+  transition: padding-left .35s ease;
+}
+
+/* Cuando el sidebar está expandido/abierto, empujamos el layout en desktop */
+body:has(.left-nav.expanded),
+body:has(.left-nav.open) {
+  padding-left: 260px;
+}
+
+/* Responsivo: en tablet/móvil el sidebar no empuja el contenido (overlay) */
+@media (max-width: 900px) {
+  :root { --sidebar-offset: 0px; }
+  body { padding-left: var(--sidebar-offset); }
+
+  /* En móviles, incluso abierto, no empujamos el contenido */
+  body:has(.left-nav.expanded),
+  body:has(.left-nav.open) {
+    padding-left: 0;
+  }
+}

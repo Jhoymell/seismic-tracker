@@ -11,6 +11,7 @@ import { AnimatePresence } from 'framer-motion';
 // Importación de nuestro tema personalizado y el layout principal
 import theme from './theme';
 import MainLayout from './components/layout/MainLayout';
+import ThreeDBackground from './components/layout/ThreeDBackground'; // Fondo 3D
 
 // Importación de todas nuestras páginas
 import HomePage from './pages/HomePage';
@@ -86,6 +87,10 @@ function App() {
       {/* Envolvemos la app con el LocalizationProvider */}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <CssBaseline />
+        {/* ========================================
+            FONDO 3D INTERACTIVO
+        ======================================== */}
+        <ThreeDBackground />
         <Router>
           {/* El componente AppContent contiene toda la lógica de renderizado
               para asegurar que se renderice una sola vez y de forma correcta. */}

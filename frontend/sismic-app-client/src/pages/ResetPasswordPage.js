@@ -26,6 +26,7 @@ import { motion } from 'framer-motion';
 
 // Importación de la función de la API
 import { confirmPasswordReset } from '../api/auth';
+import PageTransition from '../components/utils/PageTransition'; // agregado
 
 // Esquema de validación
 const schema = yup.object().shape({
@@ -116,320 +117,331 @@ const ResetPasswordPage = () => {
 
   // Variantes de animación
   const formVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20
-    },
-    visible: { 
-      opacity: 1, 
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
       y: 0,
-      transition: { 
-        duration: 0.5,
-        ease: "easeInOut"
-      } 
+      transition: { duration: 0.7, ease: "easeInOut" }, // duración consistente
     },
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Toaster position="top-center" />
-      
-      <MotionBox
-        variants={formVariants}
-        initial="hidden"
-        animate="visible"
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          backgroundColor: 'background.paper',
-          padding: { xs: 2, sm: 4 },
-          borderRadius: '1rem',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          position: 'relative',
-          overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '4px',
-            background: 'linear-gradient(90deg, #1976d2, #64b5f6)',
-          },
-        }}
-      >
-        <Box
+    <PageTransition>
+      <Container component="main" maxWidth="xs">
+        <Toaster position="top-center" />
+        
+        <MotionBox
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
           sx={{
-            width: '70px',
-            height: '70px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(25, 118, 210, 0.1)',
+            marginTop: 8,
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-            mb: 3,
-            transform: 'rotate(-10deg)',
+            background: 'linear-gradient(135deg, rgba(248, 253, 255, 0.1) 80%, rgba(227, 247, 250, 0.15) 100%)',
+            padding: { xs: 3, sm: 4 },
+            borderRadius: '1.5rem',
+            boxShadow: '0 8px 32px rgba(33, 150, 243, 0.15)',
+            position: 'relative',
+            overflow: 'hidden',
+            border: '1px solid rgba(33, 150, 243, 0.1)',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+            },
           }}
         >
-          <LockResetIcon 
-            color="primary" 
-            sx={{ 
-              fontSize: 35,
-              transform: 'rotate(10deg)',
-              transition: 'transform 0.3s ease'
-            }} 
-          />
-        </Box>
-        
-        <Typography 
-          component="h1" 
-          variant="h5" 
-          sx={{ 
-            mb: 2,
-            fontWeight: 600,
-            background: 'linear-gradient(45deg, #1976d2, #64b5f6)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            color: 'transparent',
-          }}
-        >
-          Restablecer Contraseña
-        </Typography>
-        
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
-          align="center" 
-          sx={{ mb: 3 }}
-        >
-          Crea una nueva contraseña segura para tu cuenta.
-        </Typography>
-
-        {errorMessage && (
-          <Alert 
-            severity="error" 
-            sx={{ 
-              width: '100%', 
+          <Box
+            sx={{
+              width: '70px',
+              height: '70px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(25, 118, 210, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               mb: 3,
-              '& .MuiAlert-icon': {
-                fontSize: '24px'
-              }
+              transform: 'rotate(-10deg)',
             }}
-            elevation={1}
           >
-            {errorMessage}
-          </Alert>
-        )}
-
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          sx={{ width: '100%' }}
-        >
-          {/* Indicadores de requisitos de contraseña */}
-          <Box sx={{ mb: 2, mt: 1 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              La contraseña debe cumplir con:
-            </Typography>
-            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
-              {Object.entries({
-                length: 'Al menos 8 caracteres',
-                uppercase: 'Una mayúscula',
-                lowercase: 'Una minúscula',
-                number: 'Un número',
-                specialChar: 'Un carácter especial'
-              }).map(([key, label]) => (
-                <Box
-                  key={key}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    color: passwordChecks[key] ? 'success.main' : 'text.secondary',
-                    transition: 'color 0.3s ease'
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: '50%',
-                      bgcolor: passwordChecks[key] ? 'success.main' : 'text.disabled',
-                      transition: 'background-color 0.3s ease'
-                    }}
-                  />
-                  <Typography variant="caption">{label}</Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
-
-          {/* Indicador de fortaleza */}
-          <Box sx={{ mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant="caption" color="text.secondary">
-                Fortaleza de la contraseña:
-              </Typography>
-              <Typography 
-                variant="caption" 
-                sx={{ 
-                  color: ['error.main', 'warning.main', 'info.main', 'success.main', 'success.dark'][passwordStrength.score],
-                  fontWeight: 'bold'
-                }}
-              >
-                {passwordStrength.label}
-              </Typography>
-            </Box>
-            <Box 
+            <LockResetIcon 
+              color="primary" 
               sx={{ 
-                mt: 0.5,
-                height: 4,
-                bgcolor: 'grey.200',
-                borderRadius: 2,
-                overflow: 'hidden'
-              }}
-            >
-              <Box
-                sx={{
-                  height: '100%',
-                  width: `${(passwordStrength.score + 1) * 20}%`,
-                  bgcolor: ['error.main', 'warning.main', 'info.main', 'success.main', 'success.dark'][passwordStrength.score],
-                  transition: 'all 0.3s ease'
-                }}
-              />
-            </Box>
+                fontSize: 35,
+                transform: 'rotate(10deg)',
+                transition: 'transform 0.3s ease'
+              }} 
+            />
           </Box>
-
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Token de Restablecimiento"
-            {...register("token")}
-            error={!!errors.token}
-            helperText={errors.token?.message}
-            sx={{
-              '& label.Mui-focused': {
-                color: 'primary.main'
-              }
+          
+          <Typography 
+            component="h1" 
+            variant="h5" 
+            sx={{ 
+              mb: 2,
+              fontWeight: 800,
+              background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              letterSpacing: '-0.3px',
+              filter: 'drop-shadow(0 2px 12px #00e5ff33)',
             }}
-          />
-
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Nueva Contraseña"
-            type={showPassword ? 'text' : 'password'}
-            {...register("password")}
-            error={!!errors.password}
-            helperText={errors.password?.message}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleTogglePassword('password')}
-                      edge="end"
-                      sx={{
-                        color: showPassword ? 'primary.main' : 'text.secondary',
-                        transition: 'color 0.2s ease'
-                      }}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </motion.div>
-                </InputAdornment>
-              ),
-              sx: {
-                '& .MuiOutlinedInput-notchedOutline': {
-                  transition: 'border-color 0.2s ease'
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'primary.main'
-                }
-              }
-            }}
-            sx={{
-              '& label.Mui-focused': {
-                color: 'primary.main'
-              }
-            }}
-          />
-
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Confirmar Contraseña"
-            type={showConfirmPassword ? 'text' : 'password'}
-            {...register("confirmPassword")}
-            error={!!errors.confirmPassword}
-            helperText={errors.confirmPassword?.message}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleTogglePassword('confirm')}
-                    edge="end"
-                  >
-                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <motion.div 
-            whileHover={{ scale: 1.02 }} 
-            whileTap={{ scale: 0.98 }}
           >
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
-              disabled={
-                isSubmitting || 
-                !!errorMessage || 
-                !Object.values(passwordChecks).every(Boolean) || 
-                passwordStrength.score < 2
-              }
-            >
-              {isSubmitting ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                "Cambiar Contraseña"
-              )}
-            </Button>
-          </motion.div>
+            Restablecer Contraseña
+          </Typography>
+          
+          <Typography 
+            variant="body2" 
+            color="text.secondary" 
+            align="center" 
+            sx={{ mb: 3 }}
+          >
+            Crea una nueva contraseña segura para tu cuenta.
+          </Typography>
 
           {errorMessage && (
-            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-              <Link
-                to="/olvide-mi-password"
-                style={{ color: '#1976d2', textDecoration: 'none' }}
-              >
-                Solicitar nuevo restablecimiento
-              </Link>
-            </Typography>
+            <Alert 
+              severity="error" 
+              sx={{ 
+                width: '100%', 
+                mb: 3,
+                '& .MuiAlert-icon': {
+                  fontSize: '24px'
+                }
+              }}
+              elevation={1}
+            >
+              {errorMessage}
+            </Alert>
           )}
 
-          <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-            <Link
-              to="/login"
-              style={{ color: '#1976d2', textDecoration: 'none' }}
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{ width: '100%' }}
+          >
+            {/* Indicadores de requisitos de contraseña */}
+            <Box sx={{ mb: 2, mt: 1 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                La contraseña debe cumplir con:
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
+                {Object.entries({
+                  length: 'Al menos 8 caracteres',
+                  uppercase: 'Una mayúscula',
+                  lowercase: 'Una minúscula',
+                  number: 'Un número',
+                  specialChar: 'Un carácter especial'
+                }).map(([key, label]) => (
+                  <Box
+                    key={key}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      color: passwordChecks[key] ? 'success.main' : 'text.secondary',
+                      transition: 'color 0.3s ease'
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
+                        bgcolor: passwordChecks[key] ? 'success.main' : 'text.disabled',
+                        transition: 'background-color 0.3s ease'
+                      }}
+                    />
+                    <Typography variant="caption">{label}</Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+
+            {/* Indicador de fortaleza */}
+            <Box sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="caption" color="text.secondary">
+                  Fortaleza de la contraseña:
+                </Typography>
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    color: ['error.main', 'warning.main', 'info.main', 'success.main', 'success.dark'][passwordStrength.score],
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {passwordStrength.label}
+                </Typography>
+              </Box>
+              <Box 
+                sx={{ 
+                  mt: 0.5,
+                  height: 4,
+                  bgcolor: 'grey.200',
+                  borderRadius: 2,
+                  overflow: 'hidden'
+                }}
+              >
+                <Box
+                  sx={{
+                    height: '100%',
+                    width: `${(passwordStrength.score + 1) * 20}%`,
+                    bgcolor: ['error.main', 'warning.main', 'info.main', 'success.main', 'success.dark'][passwordStrength.score],
+                    transition: 'all 0.3s ease'
+                  }}
+                />
+              </Box>
+            </Box>
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Token de Restablecimiento"
+              {...register("token")}
+              error={!!errors.token}
+              helperText={errors.token?.message}
+              sx={{
+                '& label.Mui-focused': {
+                  color: 'primary.main'
+                }
+              }}
+            />
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Nueva Contraseña"
+              type={showPassword ? 'text' : 'password'}
+              {...register("password")}
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleTogglePassword('password')}
+                        edge="end"
+                        sx={{
+                          color: showPassword ? 'primary.main' : 'text.secondary',
+                          transition: 'color 0.2s ease'
+                        }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </motion.div>
+                  </InputAdornment>
+                ),
+                sx: {
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    transition: 'border-color 0.2s ease'
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: 'primary.main'
+                  }
+                }
+              }}
+              sx={{
+                '& label.Mui-focused': {
+                  color: 'primary.main'
+                }
+              }}
+            />
+
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              label="Confirmar Contraseña"
+              type={showConfirmPassword ? 'text' : 'password'}
+              {...register("confirmPassword")}
+              error={!!errors.confirmPassword}
+              helperText={errors.confirmPassword?.message}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleTogglePassword('confirm')}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <motion.div 
+              whileHover={{ scale: 1.02 }} 
+              whileTap={{ scale: 0.98 }}
             >
-              Volver al inicio de sesión
-            </Link>
-          </Typography>
-        </Box>
-      </MotionBox>
-    </Container>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ 
+                  mt: 3, 
+                  mb: 2, 
+                  py: 1.5,
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                  background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                  '&:hover': {
+                    background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                    boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                  },
+                }}
+                disabled={
+                  isSubmitting || 
+                  !!errorMessage || 
+                  !Object.values(passwordChecks).every(Boolean) || 
+                  passwordStrength.score < 2
+                }
+              >
+                {isSubmitting ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Cambiar Contraseña"
+                )}
+              </Button>
+            </motion.div>
+
+            {errorMessage && (
+              <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+                <Link
+                  to="/olvide-mi-password"
+                  style={{ color: '#2196f3', textDecoration: 'none' }}
+                >
+                  Solicitar nuevo restablecimiento
+                </Link>
+              </Typography>
+            )}
+
+            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+              <Link
+                to="/login"
+                style={{ color: '#2196f3', textDecoration: 'none' }}
+              >
+                Volver al inicio de sesión
+              </Link>
+            </Typography>
+          </Box>
+        </MotionBox>
+      </Container>
+    </PageTransition>
   );
 };
 

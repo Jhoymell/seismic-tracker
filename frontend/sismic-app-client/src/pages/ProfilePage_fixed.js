@@ -21,6 +21,9 @@ import {
   InputAdornment,
   Avatar,
   Paper,
+  IconButton,
+  Card,
+  CardContent,
   Divider,
   Alert,
 } from "@mui/material";
@@ -32,6 +35,7 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
 import SaveIcon from '@mui/icons-material/Save';
+import EditIcon from '@mui/icons-material/Edit';
 
 // Importaciones locales
 import { getProfile, updateProfile } from "../api/user";
@@ -79,6 +83,7 @@ const ProfilePage = () => {
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting, isDirty }
   } = useForm({
     resolver: yupResolver(profileSchema),
@@ -89,6 +94,9 @@ const ProfilePage = () => {
       ruta_fotografia: null,
     }
   });
+
+  // Observar cambios en el formulario
+  const watchedFields = watch();
 
   // ========================================
   // EFECTOS

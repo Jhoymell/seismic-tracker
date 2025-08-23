@@ -1,59 +1,254 @@
+/* Contenedor base del sidebar */
 .left-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 260px;
-    height: 100vh;
-    background-color: #1e1e1e; /* Color del tema */
-    z-index: 1100;
-    transform: translateX(-100%); /* Oculto por defecto */
-    transition: transform 0.3s ease-in-out;
-    padding-top: 64px; /* Espacio para el header */
+  position: fixed;         /* fijo al lateral */
+  top: 64px;              /* espacio para el header */
+  left: 0;
+  height: calc(100vh - 64px);
+  width: 72px;             /* colapsado más amplio para mejor UX */
+  background: linear-gradient(135deg, #0a121e 80%, #10131a 100%);
+  border-right: 1px solid rgba(0, 188, 212, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 188, 212, 0.12);
+  transition: width .3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s ease, opacity .25s ease;
+  overflow: hidden;
+  z-index: 1200;           /* Asegurar que esté encima de cualquier otro contenido */
 }
 
-.left-nav.open {
-    transform: translateX(0); /* Visible */
-    box-shadow: 4px 0px 15px rgba(0,0,0,0.2);
+/* Colapsado por defecto: 72px (más usable) */
+.left-nav {
+  width: 72px;
 }
 
+/* Expandido/abierto: ancho completo del sidebar */
+.left-nav.expanded,
+.left-nav.open { 
+  width: 260px; 
+  box-shadow: 0 8px 40px rgba(0, 188, 212, 0.2);
+}
+
+/* Header del menú con botón hamburguesa */
+.left-nav__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 64px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(0, 188, 212, 0.15);
+}
+
+.left-nav__toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(0, 188, 212, 0.08);
+  border: 1px solid rgba(0, 188, 212, 0.25);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer; /* mejorado para interacción */
+  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.left-nav__toggle:hover {
+  background: rgba(0, 188, 212, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 188, 212, 0.25);
+}
+
+.left-nav__toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #b3e5fc;
+  margin: 2px 0;
+  border-radius: 2px;
+  transition: all .2s ease;
+}
+
+/* Animación del icono hamburguesa cuando está expandido */
+.left-nav.expanded .left-nav__toggle span:nth-child(1),
+.left-nav.open .left-nav__toggle span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.left-nav.expanded .left-nav__toggle span:nth-child(2),
+.left-nav.open .left-nav__toggle span:nth-child(2) {
+  opacity: 0;
+}
+
+.left-nav.expanded .left-nav__toggle span:nth-child(3),
+.left-nav.open .left-nav__toggle span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Título del menú */
+.app-title {
+  color: #e3f7fa;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+/* Lista y elementos */
 .left-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  margin: 0;
+  padding: 16px 12px;
 }
 
-.left-nav ul li a, .left-nav ul li button {
-    display: block;
-    padding: 15px 25px;
-    color: #b3b3b3;
-    text-decoration: none;
-    font-size: 16px;
-    background: none;
-    border: none;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
+.left-nav ul li { 
+  margin: 8px 0; 
+  padding: 0; 
 }
 
-.left-nav ul li a:hover, .left-nav ul li button:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
+/* Items - Mejorado para mejor accesibilidad */
+.left-nav .nav-item,
+.left-nav .MuiListItemButton-root {
+  color: #e3f7fa;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
+.left-nav .nav-item:hover,
+.left-nav .MuiListItemButton-root:hover {
+  background: rgba(0, 188, 212, 0.12);
+  color: #00e5ff;
+  transform: translateX(4px);
+  box-shadow: 0 4px 16px rgba(0, 188, 212, 0.2);
+}
+
+.left-nav .nav-item:active,
+.left-nav .MuiListItemButton-root:active {
+  transform: translateX(2px);
+}
+
+/* Iconos placeholder - para futuras mejoras */
+.left-nav .nav-item::before {
+  content: '●';
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 188, 212, 0.1);
+  border-radius: 6px;
+  color: #00bcd4;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Iconos (si se agregan) */
+.left-nav .nav-icon,
+.left-nav .MuiListItemIcon-root {
+  min-width: 36px;
+  color: #b3e5fc;
+}
+
+/* Etiquetas: ocultas en colapsado, visibles en expandido/abierto */
+.left-nav .nav-label,
+.left-nav .MuiListItemText-root {
+  opacity: 0;
+  visibility: hidden;
+  white-space: nowrap;
+  transition: opacity .25s ease, visibility .25s ease;
+}
+
+.left-nav.expanded .nav-label,
+.left-nav.open .nav-label,
+.left-nav.expanded .MuiListItemText-root,
+.left-nav.open .MuiListItemText-root {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Separadores */
+.left-nav .MuiDivider-root {
+  border-color: rgba(0, 188, 212, 0.15);
+  margin: 4px 8px;
+}
+
+/* Backdrop */
 .backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1099;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease-in-out;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1049;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
 }
 
 .backdrop.visible {
-    opacity: 1;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Responsive design mejorado */
+/* Desktop: sidebar empuja el contenido */
+@media (min-width: 901px) {
+  .left-nav { 
+    width: 72px; 
+  }
+  .left-nav.expanded,
+  .left-nav.open { 
+    width: 260px; 
+  }
+}
+
+/* Tablet: overlay mode con mejor usabilidad */
+@media (max-width: 900px) and (min-width: 601px) {
+  .left-nav { 
+    width: 72px;
+    z-index: 1200; /* mayor prioridad en tablet */
+  }
+  .left-nav.expanded,
+  .left-nav.open { 
+    width: 320px; /* un poco más ancho en tablet */
+    z-index: 1200;
+  }
+}
+
+/* Móvil: overlay completo */
+@media (max-width: 600px) {
+  .left-nav {
+    width: 0;                                /* completamente oculto */
+    border-right: none;
+    transform: translateX(-100%);            /* fuera de vista */
+    pointer-events: none;                    /* no interfiere con toques */
+  }
+  .left-nav.expanded,
+  .left-nav.open {
+    width: min(90vw, 320px);                 /* responsive width */
+    transform: translateX(0);                /* desliza hacia adentro */
+    border-right: 1px solid rgba(0, 188, 212, 0.15);
     pointer-events: auto;
+    z-index: 1300;                          /* máxima prioridad en móvil */
+  }
+  
+  /* En móvil, ajustar el header del sidebar */
+  .left-nav__header {
+    height: 64px;
+    padding: 0 16px;
+  }
+  
+  .left-nav .nav-item {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
 }

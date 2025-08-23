@@ -88,11 +88,13 @@ const ForgotPasswordPage = () => {
           flexDirection: 'column',
           alignItems: 'center',
           backgroundColor: 'background.paper',
-          padding: { xs: 2, sm: 4 },
-          borderRadius: '1rem',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          padding: { xs: 3, sm: 4 },
+          borderRadius: '1.5rem',
+          boxShadow: '0 8px 32px rgba(33, 150, 243, 0.15)',
           position: 'relative',
           overflow: 'hidden',
+          border: '1px solid rgba(33, 150, 243, 0.1)',
+          background: 'linear-gradient(135deg, rgba(248, 253, 255, 0.1) 80%, rgba(227, 247, 250, 0.15) 100%)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -100,7 +102,7 @@ const ForgotPasswordPage = () => {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, #1976d2, #64b5f6)',
+            background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff)',
           },
         }}
       >
@@ -124,11 +126,13 @@ const ForgotPasswordPage = () => {
           variant="h5" 
           sx={{ 
             mb: 2,
-            fontWeight: 600,
-            background: 'linear-gradient(45deg, #1976d2, #64b5f6)',
-            backgroundClip: 'text',
+            fontWeight: 800,
+            background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff, #2196f3)',
             WebkitBackgroundClip: 'text',
-            color: 'transparent',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.3px',
+            filter: 'drop-shadow(0 2px 12px #00e5ff33)',
           }}
         >
           Recuperar Contraseña
@@ -182,7 +186,19 @@ const ForgotPasswordPage = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
+              sx={{ 
+                mt: 3, 
+                mb: 2, 
+                py: 1.5,
+                borderRadius: '12px',
+                fontWeight: 700,
+                boxShadow: '0 4px 20px 0 rgba(33,150,243,0.15)',
+                background: 'linear-gradient(90deg, #2196f3, #00bcd4)',
+                '&:hover': {
+                  background: 'linear-gradient(90deg, #00bcd4, #2196f3)',
+                  boxShadow: '0 8px 32px 0 rgba(33,150,243,0.25)',
+                },
+              }}
               disabled={isSubmitting || !!successMessage}
             >
               {isSubmitting ? (
@@ -196,7 +212,7 @@ const ForgotPasswordPage = () => {
           <Typography variant="body2" align="center" sx={{ mt: 2 }}>
             <Link
               to="/login"
-              style={{ color: '#1976d2', textDecoration: 'none' }}
+              style={{ color: '#2196f3', textDecoration: 'none' }}
             >
               Volver al inicio de sesión
             </Link>
