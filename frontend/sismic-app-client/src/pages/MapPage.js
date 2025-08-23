@@ -1,149 +1,159 @@
-import PageTransition from '../components/utils/PageTransition';
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import toast, { Toaster } from "react-hot-toast";
-import { useDebounce } from "use-debounce";
-import { Paper, Box, Typography } from "@mui/material";
-import { getSismos } from "../api/sismos";
-import MapFilters from "../components/map/MapFilters";
-import "./MapPage.css";
-import dayjs from "dayjs";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import { sismoIcon } from '../components/map/mapIcons';
-import { commonStyles, spacing } from '../styles/commonStyles';
+import MapFilters from '../components/map/MapFilters';
+import { getSismos } from '../api/sismos';
+import { useDebounce } from 'use-debounce';
+import dayjs from 'dayjs';
+import toast, { Toaster } from 'react-hot-toast';
 
-// Usamos Box de MUI para mantener consistencia con el estilo
+// Página del mapa: versión funcional reconstruida con filtros + polling + marcadores
 const MapPage = () => {
+  // Estado de sismos y carga
   const [sismos, setSismos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estado para los filtros
+  // Filtros
   const [filters, setFilters] = useState({
     magnitud__gte: 4.5,
-    search: "",
-    selectedDate: null, // Fecha seleccionada
+    search: '',
+    selectedDate: null,
   });
-
-  // Usamos 'debounce' para el filtro de búsqueda de texto.
-  // Esto evita hacer una llamada a la API en cada tecla que se presiona.
-  // Solo se ejecutará la búsqueda 500ms después de que el usuario deje de escribir.
   const [debouncedFilters] = useDebounce(filters, 500);
-  const latestSismoTimestamp = useRef(null);
 
+  // Control de montaje diferido para asegurar tamaño estable
+  const [isMapReady, setIsMapReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setIsMapReady(true), 120); // pequeño delay
+    return () => clearTimeout(t);
+  }, []);
+
+  // Timestamp del último sismo para polling incremental
+  const latestSismoTimestamp = useRef(null);
+  const mapRef = useRef(null);
+
+  // Fetch principal con filtros
   const fetchSismos = useCallback(async (currentFilters) => {
     setLoading(true);
     try {
-      // 2. Construimos los parámetros dinámicamente
-      const params = {
-        magnitud__gte: currentFilters.magnitud__gte,
-        search: currentFilters.search,
-      };
-
-      // Si hay fechas, las formateamos y las añadimos a los parámetros
+      const params = { magnitud__gte: currentFilters.magnitud__gte || 4.5 };
+      if (currentFilters.search) params.search = currentFilters.search;
       if (currentFilters.selectedDate) {
-        params.fecha_hora_evento__date = dayjs(currentFilters.selectedDate).format(
-          "YYYY-MM-DD"
-        );
+        params.fecha_hora_evento__date = dayjs(currentFilters.selectedDate).format('YYYY-MM-DD');
       }
-
       const data = await getSismos(params);
       setSismos(data);
-      // ...
-    } catch (error) {
-      // ...
+      if (data.length > 0) {
+        latestSismoTimestamp.current = data[0].fecha_hora_evento;
+      }
+    } catch (err) {
+      console.error('Error fetch sismos', err);
+      toast.error('Error al cargar sismos');
     } finally {
       setLoading(false);
+      // Invalidate una vez que llegaron datos (por si cambió layout)
+      setTimeout(() => {
+        if (mapRef.current) mapRef.current.invalidateSize();
+      }, 80);
     }
   }, []);
 
-  // Efecto inicial para cargar los datos y cada vez que los filtros (debounced) cambian
+  // Efecto sobre filtros (debounce)
   useEffect(() => {
     fetchSismos(debouncedFilters);
   }, [debouncedFilters, fetchSismos]);
 
-  // Efecto para el polling de nuevos sismos cada 60 segundos
+  // Polling cada 60s para nuevos sismos
   useEffect(() => {
     const interval = setInterval(async () => {
-      console.log("Buscando nuevos sismos...");
       try {
+        if (!latestSismoTimestamp.current) return; // evitar primera vuelta vacía
         const params = { since_date: latestSismoTimestamp.current };
-        const nuevosSismos = await getSismos(params);
-
-        if (nuevosSismos.length > 0) {
-          toast.success(
-            `${nuevosSismos.length} nuevo(s) sismo(s) detectado(s)!`
-          );
-          // Añadir los nuevos sismos al principio de la lista
-          setSismos((prevSismos) => [...nuevosSismos, ...prevSismos]);
-          latestSismoTimestamp.current = nuevosSismos[0].fecha_hora_evento;
+        const nuevos = await getSismos(params);
+        if (nuevos.length > 0) {
+          toast.success(`${nuevos.length} nuevo(s) sismo(s)`);
+          setSismos(prev => [...nuevos, ...prev]);
+          latestSismoTimestamp.current = nuevos[0].fecha_hora_evento;
         }
-      } catch (error) {
-        console.error("Error durante el polling:", error);
+      } catch (e) {
+        console.error('Polling error', e);
       }
-    }, 60000); // 60000 ms = 60 segundos
-
-    return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
+    }, 60000);
+    return () => clearInterval(interval);
   }, []);
 
+  // Marcadores memorizados
+  const markers = useMemo(() => {
+    return sismos
+      .filter(s => s.latitud != null && s.longitud != null)
+      .map((s, idx) => {
+        const lat = typeof s.latitud === 'string' ? parseFloat(s.latitud) : s.latitud;
+        const lng = typeof s.longitud === 'string' ? parseFloat(s.longitud) : s.longitud;
+        if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+        return (
+          <Marker key={`${s.id_evento_usgs || 'evt'}-${idx}`} position={[lat, lng]} icon={sismoIcon}>
+            <Popup>
+              <div style={{ minWidth: 200 }}>
+                <strong>{s.lugar_descripcion || 'Ubicación no disponible'}</strong><br />
+                Magnitud: {s.magnitud} Mw<br />
+                Profundidad: {s.profundidad} km<br />
+                Fecha: {new Date(s.fecha_hora_evento).toLocaleString()}<br />
+                {s.url_usgs && (
+                  <a href={s.url_usgs} target="_blank" rel="noopener noreferrer">USGS</a>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        );
+      });
+  }, [sismos]);
+
   return (
-    <PageTransition>
-      <Box sx={{ 
-        ...commonStyles.pageContainer,
-        p: 2,
-      }}>
-        <Toaster position="top-center" />
+    <div style={{
+      width: '100%',
+      height: 'calc(100vh - 64px)',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '12px',
+      padding: '12px 12px 16px',
+      boxSizing: 'border-box',
+      position: 'relative',
+      zIndex: 1
+    }}>
+      <Toaster position="top-center" />
+      {/* Filtros */}
+      <div style={{ width: '100%', maxWidth: 1220, margin: '0 auto' }}>
         <MapFilters filters={filters} setFilters={setFilters} />
-        <Paper
-          elevation={3}
-          sx={{ 
-            height: "calc(100vh - 220px)", 
-            width: "100%",
-            borderRadius: spacing.borderRadius,
-            overflow: 'hidden',
-          }}
-        >
-        {loading && <div className="loading-overlay">Cargando...</div>}
-        <MapContainer
-          center={[9.63, -84.08]}
-          zoom={7}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          { sismos.map((sismo) => (
-  <Marker
-    key={sismo.id_evento_usgs}
-    position={[sismo.latitud, sismo.longitud]}
-    icon={sismoIcon} // usamos el ícono personalizado
-  >
-    <Popup>
-      <Box sx={{ minWidth: 200 }}>
-        <Typography variant="subtitle2" component="h3" gutterBottom>
-          {sismo.lugar_descripcion || "Ubicación no disponible"}
-        </Typography>
-        <Typography variant="body2">
-          <strong>Magnitud:</strong> {sismo.magnitud} Mw
-        </Typography>
-        <Typography variant="body2">
-          <strong>Profundidad:</strong> {sismo.profundidad} km
-        </Typography>
-        <Typography variant="body2">
-          <strong>Fecha:</strong> {new Date(sismo.fecha_hora_evento).toLocaleString()}
-        </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          <a href={sismo.url_usgs} target="_blank" rel="noopener noreferrer">
-            Ver más detalles en USGS
-          </a>
-        </Typography>
-      </Box>
-    </Popup>
-  </Marker>
-)) }
-        </MapContainer>
-      </Paper>
-      </Box>
-    </PageTransition>
+      </div>
+      {/* Contenedor del mapa */}
+      <div style={{ flex: 1, position: 'relative', width: '100%', maxWidth: 1220, margin: '0 auto', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 2px 16px 0 #00bcd422', backdropFilter: 'blur(4px)', background: 'rgba(10,18,30,0.55)' }}>
+        {loading && (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, background: 'rgba(0,0,0,0.25)', backdropFilter: 'blur(2px)', color: '#fff', fontWeight: 600 }}>
+            Cargando sismos...
+          </div>
+        )}
+        {isMapReady ? (
+          <MapContainer
+            center={[9.63, -84.08]}
+            zoom={7}
+            style={{ height: '100%', width: '100%' }}
+            whenCreated={(map) => {
+              mapRef.current = map;
+              setTimeout(() => map.invalidateSize(), 60);
+            }}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {markers}
+          </MapContainer>
+        ) : (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Inicializando mapa...</div>
+        )}
+      </div>
+    </div>
   );
 };
 

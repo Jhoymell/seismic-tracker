@@ -88,11 +88,13 @@ const ForgotPasswordPage = () => {
           flexDirection: 'column',
           alignItems: 'center',
           backgroundColor: 'background.paper',
-          padding: { xs: 2, sm: 4 },
-          borderRadius: '1rem',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          padding: { xs: 3, sm: 4 },
+          borderRadius: '1.5rem',
+          boxShadow: '0 8px 32px rgba(33, 150, 243, 0.15)',
           position: 'relative',
           overflow: 'hidden',
+          border: '1px solid rgba(33, 150, 243, 0.1)',
+          background: 'linear-gradient(135deg, rgba(248, 253, 255, 0.1) 80%, rgba(227, 247, 250, 0.15) 100%)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -100,7 +102,7 @@ const ForgotPasswordPage = () => {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, #1976d2, #64b5f6)',
+            background: 'linear-gradient(90deg, #2196f3, #00bcd4, #00e5ff)',
           },
         }}
       >

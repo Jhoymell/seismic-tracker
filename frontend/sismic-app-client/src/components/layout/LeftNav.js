@@ -3,46 +3,79 @@ import { Link, useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import './LeftNav.css';
 
+/**
+ * Componente LeftNav - Barra lateral de navegación principal
+ * 
+ * Funcionalidades:
+ * - Navegación responsiva con comportamiento adaptativo según el tamaño de pantalla
+ * - En desktop: Se expande al hacer hover, se contrae automáticamente
+ * - En móvil: Se abre/cierra con clic, incluye backdrop para cerrar
+ * - Diferentes opciones de menú según el estado de autenticación
+ * - Soporte para usuarios administradores
+ * - Botón hamburguesa integrado con animación CSS
+ * 
+ * Estados:
+ * - isSidebarOpen: Control global del sidebar (principalmente móvil)
+ * - expanded: Control local de expansión (principalmente desktop)
+ * 
+ * @returns {JSX.Element} LeftNav component
+ */
 const LeftNav = () => {
   const { isAuthenticated, logout, user, isSidebarOpen, closeSidebar, toggleSidebar } = useAuthStore();
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
 
+  /**
+   * Maneja el cierre de sesión y navegación
+   */
   const handleLogout = () => {
     logout();
     closeSidebar();
     navigate('/login');
   };
 
+  /**
+   * Cierra el sidebar al hacer clic en un enlace (especialmente útil en móvil)
+   */
   const handleLinkClick = () => {
     closeSidebar();
     setExpanded(false);
   };
 
+  /**
+   * Maneja el toggle del botón hamburguesa
+   * - En móvil: usa el estado global del sidebar
+   * - En desktop: usa el estado local de expansión
+   */
   const handleToggleClick = () => {
     if (window.innerWidth <= 600) {
-      // En móvil, usar el estado global del sidebar
       toggleSidebar();
     } else {
-      // En desktop/tablet, usar el estado local de expansión
       setExpanded(!expanded);
     }
   };
 
-  // Mejorar la gestión del hover en desktop
+  /**
+   * Expande el sidebar al hacer hover (solo en desktop)
+   */
   const handleMouseEnter = () => {
     if (window.innerWidth > 600 && !isSidebarOpen) {
       setExpanded(true);
     }
   };
 
+  /**
+   * Contrae el sidebar al quitar el hover (solo en desktop)
+   */
   const handleMouseLeave = () => {
     if (window.innerWidth > 600 && !isSidebarOpen) {
       setExpanded(false);
     }
   };
 
-  // Limpiar estados al cambiar tamaño de ventana
+  /**
+   * Limpia estados al cambiar el tamaño de ventana para evitar conflictos
+   */
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 600) {
@@ -58,17 +91,19 @@ const LeftNav = () => {
 
   return (
     <>
+      {/* Barra lateral principal */}
       <nav
         className={`left-nav ${(isSidebarOpen || expanded) ? 'open expanded' : ''}`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Encabezado con ícono hamburguesa y título */}
+        {/* Encabezado con botón hamburguesa y título */}
         <div className="left-nav__header">
           <button 
             className="left-nav__toggle" 
             onClick={handleToggleClick}
             aria-label="Alternar menú lateral"
+            title="Abrir/Cerrar menú"
           >
             <span></span>
             <span></span>
@@ -77,6 +112,7 @@ const LeftNav = () => {
           <span className="nav-label app-title">Menú</span>
         </div>
 
+        {/* Lista de navegación */}
         <ul>
           <li>
             <Link className="nav-item" to="/" onClick={handleLinkClick}>
@@ -84,6 +120,7 @@ const LeftNav = () => {
             </Link>
           </li>
 
+          {/* Opciones para usuarios autenticados */}
           {isAuthenticated ? (
             <>
               <li>
@@ -96,6 +133,7 @@ const LeftNav = () => {
                   <span className="nav-label">Mi Perfil</span>
                 </Link>
               </li>
+              {/* Opción exclusiva para administradores */}
               {user?.tipo_usuario === 'ADMINISTRADOR' && (
                 <li>
                   <Link className="nav-item" to="/admin" onClick={handleLinkClick}>
@@ -110,6 +148,7 @@ const LeftNav = () => {
               </li>
             </>
           ) : (
+            /* Opciones para usuarios no autenticados */
             <>
               <li>
                 <Link className="nav-item" to="/login" onClick={handleLinkClick}>
@@ -130,6 +169,7 @@ const LeftNav = () => {
       <div
         className={`backdrop ${isSidebarOpen ? 'visible' : ''}`}
         onClick={closeSidebar}
+        aria-hidden="true"
       />
     </>
   );

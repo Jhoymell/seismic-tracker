@@ -10,7 +10,7 @@
   box-shadow: 0 8px 32px rgba(0, 188, 212, 0.12);
   transition: width .3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s ease, opacity .25s ease;
   overflow: hidden;
-  z-index: 1050;           /* debajo del header pero encima del contenido */
+  z-index: 1200;           /* Asegurar que esté encima de cualquier otro contenido */
 }
 
 /* Colapsado por defecto: 72px (más usable) */

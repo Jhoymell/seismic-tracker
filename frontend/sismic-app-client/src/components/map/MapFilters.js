@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, Slider, TextField, Paper } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { commonStyles } from '../../styles/commonStyles';
 
 // MapFilters: Componente para filtrar los sismos en el mapa
 // Permite filtrar por magnitud mínima, búsqueda por lugar y rango de fechas
@@ -85,15 +86,7 @@ const MapFilters = ({ filters, setFilters }) => {
           onChange={handleInputChange}
           sx={{
             width: { xs: "100%", md: 250 },
-            "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#00bcd4",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(0,188,212,0.25)",
-            },
-            "& label.Mui-focused": { color: "#00bcd4" },
-            "& .MuiInputBase-input": { color: "#e3f7fa" },
-            "& .MuiInputLabel-root": { color: "#b3e5fc" },
+            ...commonStyles.styledInput,
           }}
         />
 
@@ -109,15 +102,7 @@ const MapFilters = ({ filters, setFilters }) => {
                 sx: { width: { xs: "100%", md: 250 } },
               },
               sx: {
-                "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#00bcd4",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(0,188,212,0.25)",
-                },
-                "& label.Mui-focused": { color: "#00bcd4" },
-                "& .MuiInputBase-input": { color: "#e3f7fa" },
-                "& .MuiInputLabel-root": { color: "#b3e5fc" },
+                ...commonStyles.styledInput,
               },
             },
           }}

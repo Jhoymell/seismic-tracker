@@ -2,43 +2,112 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { jwtDecode } from "jwt-decode";
 
-// El store se crea con persistencia en localStorage.
-// El nombre 'auth-storage' es la clave que se usará en localStorage.
+/**
+ * AuthStore - Store global de autenticación y estado de UI
+ * 
+ * Gestiona:
+ * - Estado de autenticación del usuario (tokens, datos de usuario)
+ * - Estado del sidebar lateral (abierto/cerrado)
+ * - Estado del panel de noticias (visible/oculto)
+ * 
+ * Persistencia:
+ * - Los datos de autenticación se guardan en localStorage
+ * - Los estados de UI (sidebar, panel) no se persisten
+ * 
+ * Funcionalidades:
+ * - Login/logout con JWT tokens
+ * - Decodificación automática de tokens JWT
+ * - Control del sidebar responsivo
+ * - Control del panel lateral de noticias
+ * - Actualización del perfil de usuario
+ */
 const useAuthStore = create(
   persist(
     (set, get) => ({
+      // === ESTADO DE AUTENTICACIÓN ===
+      /** @type {string|null} Token de acceso JWT */
       accessToken: null,
+      /** @type {string|null} Token de refresh JWT */
       refreshToken: null,
+      /** @type {Object|null} Datos del usuario autenticado */
       user: null,
+      /** @type {boolean} Estado de autenticación */
       isAuthenticated: false,
+
+      // === ESTADO DE UI ===
+      /** @type {boolean} Estado del sidebar lateral (principalmente móvil) */
       isSidebarOpen: false,
-      isNewsPanelVisible: true, // Añadido para controlar la visibilidad del panel de noticias
-      // Acción para alternar la visibilidad del panel de noticias
+      /** @type {boolean} Visibilidad del panel de noticias lateral */
+      isNewsPanelVisible: true,
+
+      // === ACCIONES DE UI ===
+      /**
+       * Alterna la visibilidad del panel de noticias
+       */
       toggleNewsPanel: () =>
         set((state) => ({ isNewsPanelVisible: !state.isNewsPanelVisible })),
-      // Acción para iniciar sesión
-      // Acción para iniciar sesión
+
+      /**
+       * Abre el sidebar (principalmente para móvil)
+       */
+      openSidebar: () => set({ isSidebarOpen: true }),
+
+      /**
+       * Cierra el sidebar
+       */
+      closeSidebar: () => set({ isSidebarOpen: false }),
+
+      /**
+       * Alterna el estado del sidebar
+       */
+      toggleSidebar: () =>
+        set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+
+      // === ACCIONES DE AUTENTICACIÓN ===
+      /**
+       * Inicia sesión del usuario
+       * @param {Object} tokens - Objeto con access y refresh tokens
+       * @param {string} tokens.access - JWT access token
+       * @param {string} tokens.refresh - JWT refresh token
+       */
       login: (tokens) => {
-        const decodedToken = jwtDecode(tokens.access);
-        // Si el token tiene ruta_fotografia_url, úsala; si no, usa ruta_fotografia
-        const fotoUrl = decodedToken.ruta_fotografia_url || decodedToken.ruta_fotografia || null;
-        set({
-          accessToken: tokens.access,
-          refreshToken: tokens.refresh,
-          // Ahora guardamos el objeto de usuario completo que nos interesa
-          user: {
-            id: decodedToken.user_id,
-            email: decodedToken.email,
-            tipo_usuario: decodedToken.tipo_usuario,
-            username: decodedToken.username, // Asegúrate de que el token contiene este campo
-            first_name: decodedToken.first_name, // Añadido para mostrar el nombre en el header
-            ruta_fotografia: fotoUrl, // Añadido para la foto de perfil
-          },
-          isAuthenticated: true,
-        });
+        try {
+          const decodedToken = jwtDecode(tokens.access);
+          
+          // Determinar la URL de la foto de perfil
+          const fotoUrl = decodedToken.ruta_fotografia_url || 
+                          decodedToken.ruta_fotografia || 
+                          null;
+          
+          set({
+            accessToken: tokens.access,
+            refreshToken: tokens.refresh,
+            // Crear objeto de usuario completo desde el token decodificado
+            user: {
+              id: decodedToken.user_id,
+              email: decodedToken.email,
+              tipo_usuario: decodedToken.tipo_usuario,
+              username: decodedToken.username,
+              first_name: decodedToken.first_name,
+              ruta_fotografia: fotoUrl,
+            },
+            isAuthenticated: true,
+          });
+        } catch (error) {
+          console.error('Error al decodificar el token:', error);
+          // En caso de error, no autenticar
+          set({
+            accessToken: null,
+            refreshToken: null,
+            user: null,
+            isAuthenticated: false,
+          });
+        }
       },
 
-      // Acción para cerrar sesión
+      /**
+       * Cierra la sesión del usuario y limpia el estado
+       */
       logout: () => {
         set({
           accessToken: null,
@@ -47,31 +116,38 @@ const useAuthStore = create(
           isAuthenticated: false,
         });
       },
-      // Acción para alternar el estado del sidebar
-      openSidebar: () => set({ isSidebarOpen: true }),
-      closeSidebar: () => set({ isSidebarOpen: false }),
-      toggleSidebar: () =>
-        set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
-      // Acción para actualizar el perfil del usuario en el store
+      /**
+       * Actualiza los datos del perfil del usuario en el store
+       * @param {Object} profileData - Nuevos datos del perfil
+       */
       updateUserProfile: (profileData) => {
-        // Siempre guarda la URL absoluta en ruta_fotografia
-        const fotoUrl = profileData.ruta_fotografia_url || profileData.ruta_fotografia || null;
+        // Determinar la URL de la foto actualizada
+        const fotoUrl = profileData.ruta_fotografia_url || 
+                        profileData.ruta_fotografia || 
+                        null;
+        
         set((state) => ({
-          user: { ...state.user, ...profileData, ruta_fotografia: fotoUrl },
+          user: { 
+            ...state.user, 
+            ...profileData, 
+            ruta_fotografia: fotoUrl 
+          },
         }));
       },
     }),
     {
       name: "auth-storage",
-      // No queremos guardar el estado de la barra lateral en localStorage
+      /**
+       * Configuración de persistencia:
+       * Solo persiste datos de autenticación, no estados de UI
+       */
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-      // Podríamos añadir una acción para refrescar el token aquí en el futuro
     }
   )
 );

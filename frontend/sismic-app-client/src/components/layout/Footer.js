@@ -8,15 +8,15 @@ const Footer = () => {
     <Box
       component="footer"
       sx={{
-        py: 6,
+        mt: 'auto',
+        py: { xs: 3, md: 4 },
         px: 2,
-        mt: 8,
         background: gradients.footer,
         borderTop: `1px solid ${colors.secondary}15`,
         color: colors.textLight,
         boxShadow: shadows.glow,
-        position: 'relative',
-        zIndex: 10,
+        position: 'static',
+        zIndex: 2,
       }}
     >
       <Container maxWidth="lg">
@@ -130,8 +130,8 @@ const Footer = () => {
         {/* Separador decorativo */}
         <Box 
           sx={{
-            mt: 4,
-            pt: 3,
+            mt: 3,
+            pt: 2,
             borderTop: `1px solid ${colors.secondary}20`,
             textAlign: 'center',
           }}
@@ -139,7 +139,7 @@ const Footer = () => {
           <Typography variant="caption" sx={{
             color: colors.textMuted,
             fontStyle: 'italic',
-            fontSize: '0.8rem',
+            fontSize: '0.7rem',
           }}>
             "Vigilando el pulso sísmico de nuestro planeta para un futuro más seguro"
           </Typography>
